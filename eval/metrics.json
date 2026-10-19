@@ -1,0 +1,223 @@
+{
+  "total_samples": 15,
+  "samples": [
+    {
+      "sample": "invoice.jpg",
+      "category": "document",
+      "mean_err_px": 0.7,
+      "err_pct_diag": 0.04,
+      "detected": true,
+      "is_success": true,
+      "confidence": 0.82,
+      "mode_used": "bw",
+      "timings_ms": {
+        "warp_and_geom_ms": 12.99,
+        "mode_detect_ms": 2.22,
+        "enhance_ms": 21.44,
+        "total_ms": 36.67
+      }
+    },
+    {
+      "sample": "certificate.jpg",
+      "category": "document",
+      "mean_err_px": 0.9,
+      "err_pct_diag": 0.05,
+      "detected": true,
+      "is_success": true,
+      "confidence": 0.84,
+      "mode_used": "color_enhanced",
+      "timings_ms": {
+        "warp_and_geom_ms": 13.64,
+        "mode_detect_ms": 2.08,
+        "enhance_ms": 64.61,
+        "total_ms": 80.36
+      }
+    },
+    {
+      "sample": "receipt.jpg",
+      "category": "document",
+      "mean_err_px": 0.5,
+      "err_pct_diag": 0.03,
+      "detected": true,
+      "is_success": true,
+      "confidence": 0.75,
+      "mode_used": "bw",
+      "timings_ms": {
+        "warp_and_geom_ms": 10.98,
+        "mode_detect_ms": 1.3,
+        "enhance_ms": 14.99,
+        "total_ms": 27.29
+      }
+    },
+    {
+      "sample": "handwritten_notes.jpg",
+      "category": "document",
+      "mean_err_px": 1.1,
+      "err_pct_diag": 0.06,
+      "detected": true,
+      "is_success": true,
+      "confidence": 0.8,
+      "mode_used": "bw",
+      "timings_ms": {
+        "warp_and_geom_ms": 16.96,
+        "mode_detect_ms": 1.71,
+        "enhance_ms": 17.98,
+        "total_ms": 36.66
+      }
+    },
+    {
+      "sample": "images (1).jpeg",
+      "category": "plate_or_label",
+      "resolution": "225x225",
+      "detected": true,
+      "confidence": 0.88,
+      "mode_used": "plate_text",
+      "timings_ms": {
+        "warp_and_geom_ms": 0.27,
+        "mode_detect_ms": 0.0,
+        "enhance_ms": 0.11,
+        "total_ms": 0.39
+      }
+    },
+    {
+      "sample": "images (10).jpeg",
+      "category": "plate_or_label",
+      "resolution": "335x597",
+      "detected": true,
+      "confidence": 0.88,
+      "mode_used": "plate_text",
+      "timings_ms": {
+        "warp_and_geom_ms": 0.61,
+        "mode_detect_ms": 0.0,
+        "enhance_ms": 0.13,
+        "total_ms": 0.75
+      }
+    },
+    {
+      "sample": "images (2).jpeg",
+      "category": "plate_or_label",
+      "resolution": "259x194",
+      "detected": true,
+      "confidence": 0.88,
+      "mode_used": "plate_text",
+      "timings_ms": {
+        "warp_and_geom_ms": 0.88,
+        "mode_detect_ms": 0.0,
+        "enhance_ms": 0.29,
+        "total_ms": 1.18
+      }
+    },
+    {
+      "sample": "images (3).jpeg",
+      "category": "plate_or_label",
+      "resolution": "638x480",
+      "detected": true,
+      "confidence": 0.88,
+      "mode_used": "plate_text",
+      "timings_ms": {
+        "warp_and_geom_ms": 0.71,
+        "mode_detect_ms": 0.0,
+        "enhance_ms": 0.28,
+        "total_ms": 0.99
+      }
+    },
+    {
+      "sample": "images (4).jpeg",
+      "category": "plate_or_label",
+      "resolution": "500x193",
+      "detected": true,
+      "confidence": 0.88,
+      "mode_used": "plate_text",
+      "timings_ms": {
+        "warp_and_geom_ms": 5.16,
+        "mode_detect_ms": 0.0,
+        "enhance_ms": 2.25,
+        "total_ms": 7.42
+      }
+    },
+    {
+      "sample": "images (5).jpeg",
+      "category": "plate_or_label",
+      "resolution": "456x415",
+      "detected": true,
+      "confidence": 0.88,
+      "mode_used": "plate_text",
+      "timings_ms": {
+        "warp_and_geom_ms": 2.1,
+        "mode_detect_ms": 0.0,
+        "enhance_ms": 0.64,
+        "total_ms": 2.74
+      }
+    },
+    {
+      "sample": "images (6).jpeg",
+      "category": "plate_or_label",
+      "resolution": "200x160",
+      "detected": true,
+      "confidence": 0.88,
+      "mode_used": "plate_text",
+      "timings_ms": {
+        "warp_and_geom_ms": 0.62,
+        "mode_detect_ms": 0.0,
+        "enhance_ms": 0.16,
+        "total_ms": 0.79
+      }
+    },
+    {
+      "sample": "images (7).jpeg",
+      "category": "plate_or_label",
+      "resolution": "516x277",
+      "detected": true,
+      "confidence": 0.65,
+      "mode_used": "plate_text",
+      "timings_ms": {
+        "warp_and_geom_ms": 0.72,
+        "mode_detect_ms": 0.0,
+        "enhance_ms": 2.88,
+        "total_ms": 3.62
+      }
+    },
+    {
+      "sample": "images (8).jpeg",
+      "category": "plate_or_label",
+      "resolution": "240x222",
+      "detected": true,
+      "confidence": 0.88,
+      "mode_used": "plate_text",
+      "timings_ms": {
+        "warp_and_geom_ms": 1.7,
+        "mode_detect_ms": 0.0,
+        "enhance_ms": 0.63,
+        "total_ms": 2.34
+      }
+    },
+    {
+      "sample": "images (9).jpeg",
+      "category": "plate_or_label",
+      "resolution": "565x353",
+      "detected": true,
+      "confidence": 0.88,
+      "mode_used": "plate_text",
+      "timings_ms": {
+        "warp_and_geom_ms": 4.62,
+        "mode_detect_ms": 0.0,
+        "enhance_ms": 3.77,
+        "total_ms": 8.4
+      }
+    },
+    {
+      "sample": "images.jpeg",
+      "category": "plate_or_label",
+      "resolution": "549x364",
+      "detected": true,
+      "confidence": 0.88,
+      "mode_used": "plate_text",
+      "timings_ms": {
+        "warp_and_geom_ms": 2.28,
+        "mode_detect_ms": 0.0,
+        "enhance_ms": 1.05,
+        "total_ms": 3.33
+      }
+    }
+  ]
+}
