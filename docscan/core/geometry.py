@@ -117,8 +117,82 @@ def rotate_corners(
     return order_points(rotated)
 
 
-def deskew(image: np.ndarray, max_angle: float = 12.0) -> np.ndarray:
-    """Refine small residual tilt/skew on a rectified text document using Hough lines.
+def _text_mask(gray: np.ndarray, max_dim: int = 500) -> np.ndarray:
+    """Downscaled binary mask of the text strokes (the minority tone on the page)."""
+    h, w = gray.shape[:2]
+    scale = min(1.0, max_dim / float(max(h, w)))
+    if scale < 1.0:
+        gray = cv2.resize(gray, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
+    gray = cv2.GaussianBlur(gray, (3, 3), 0)
+    thr, mask = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    if np.count_nonzero(mask) > mask.size / 2:
+        mask = cv2.bitwise_not(mask)
+    return mask
+
+
+def _row_sharpness(mask: np.ndarray, angle: float) -> float:
+    """How sharply text lines stack into rows once the mask is rotated by `angle` degrees."""
+    h, w = mask.shape[:2]
+    rot = cv2.getRotationMatrix2D((w / 2.0, h / 2.0), angle, 1.0)
+    rotated = cv2.warpAffine(mask, rot, (w, h), flags=cv2.INTER_LINEAR, borderValue=0)
+    profile = rotated.sum(axis=1, dtype=np.float64) / 255.0
+    return float(np.sum(np.diff(profile) ** 2))
+
+
+def estimate_text_skew(image: np.ndarray, max_angle: float = 20.0) -> float:
+    """Estimate the rotation (degrees, cv2 convention: positive = counter-clockwise) that
+    makes the text lines horizontal. Returns 0.0 when there is no clear text-line signal.
+
+    Uses a projection-profile search: the correct angle is where the row histogram of text
+    pixels is sharpest. This follows the text itself rather than borders or clutter."""
+    if image.size == 0:
+        return 0.0
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) if image.ndim == 3 else image
+    mask = _text_mask(gray)
+    if np.count_nonzero(mask) < 50:
+        return 0.0
+
+    base = _row_sharpness(mask, 0.0)
+    coarse = np.arange(-max_angle, max_angle + 0.01, 1.0)
+    scores = [_row_sharpness(mask, a) for a in coarse]
+    best = float(coarse[int(np.argmax(scores))])
+    fine = np.arange(best - 1.0, best + 1.01, 0.1)
+    fine_scores = [_row_sharpness(mask, a) for a in fine]
+    best = float(fine[int(np.argmax(fine_scores))])
+    best_score = max(fine_scores)
+
+    # Only trust a clear improvement over the unrotated page.
+    if base <= 0 or best_score < 1.05 * base:
+        return 0.0
+    return best
+
+
+def _hough_skew(gray: np.ndarray, max_angle: float) -> float:
+    """Fallback skew estimate from near-horizontal Hough line segments."""
+    h, w = gray.shape[:2]
+    edges = cv2.Canny(gray, 40, 140, apertureSize=3)
+    lines = cv2.HoughLinesP(
+        edges, 1, np.pi / 180, threshold=max(25, min(75, int(w * 0.15))),
+        minLineLength=max(15, w // 8), maxLineGap=15,
+    )
+    if lines is None or len(lines) == 0:
+        return 0.0
+    angles = []
+    for x1, y1, x2, y2 in lines.reshape(-1, 4):
+        deg = float(np.degrees(np.arctan2(y2 - y1, x2 - x1)))
+        if abs(deg) <= max_angle:
+            angles.append(deg)
+        elif abs(abs(deg) - 180.0) <= max_angle:
+            angles.append(deg - 180.0 if deg > 0 else deg + 180.0)
+    return float(np.median(angles)) if angles else 0.0
+
+
+def deskew(image: np.ndarray, max_angle: float = 20.0) -> np.ndarray:
+    """Level the text on a rectified document so it reads straight, like a flatbed scan.
+
+    The angle comes from the text lines themselves (projection profile), falling back to
+    Hough lines. The canvas is enlarged to hold the rotated page so no corner is cut off;
+    the new margins are filled white.
 
     Args:
         image: Warped BGR or grayscale image.
@@ -130,45 +204,75 @@ def deskew(image: np.ndarray, max_angle: float = 12.0) -> np.ndarray:
     if image.size == 0:
         return image
 
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) if image.ndim == 3 else image
-    h, w = gray.shape[:2]
-    # Edge detection
-    edges = cv2.Canny(gray, 40, 140, apertureSize=3)
-    thresh = max(25, min(75, int(w * 0.15)))
-    min_len = max(15, w // 8)
-    lines = cv2.HoughLinesP(
-        edges, 1, np.pi / 180, threshold=thresh, minLineLength=min_len, maxLineGap=15
-    )
-
-    if lines is None or len(lines) == 0:
+    angle = estimate_text_skew(image, max_angle)
+    if angle == 0.0:
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) if image.ndim == 3 else image
+        angle = _hough_skew(gray, min(max_angle, 12.0))
+    if abs(angle) < 0.3:
         return image
 
-    lines = lines.reshape(-1, 4)
-    angles = []
-    for x1, y1, x2, y2 in lines:
-        angle_rad = np.arctan2(y2 - y1, x2 - x1)
-        angle_deg = np.degrees(angle_rad)
-        # We are looking for nearly horizontal lines
-        if abs(angle_deg) <= max_angle:
-            angles.append(angle_deg)
-        elif abs(abs(angle_deg) - 180.0) <= max_angle:
-            norm_deg = angle_deg - 180.0 if angle_deg > 0 else angle_deg + 180.0
-            angles.append(norm_deg)
-
-    if not angles:
-        return image
-
-    median_angle = float(np.median(angles))
-    if abs(median_angle) < 0.2:
-        return image
-
-    center = (w / 2.0, h / 2.0)
-    rot_mat = cv2.getRotationMatrix2D(center, median_angle, 1.0)
+    h, w = image.shape[:2]
+    rot = cv2.getRotationMatrix2D((w / 2.0, h / 2.0), angle, 1.0)
+    cos, sin = abs(rot[0, 0]), abs(rot[0, 1])
+    new_w = int(np.ceil(h * sin + w * cos))
+    new_h = int(np.ceil(h * cos + w * sin))
+    rot[0, 2] += new_w / 2.0 - w / 2.0
+    rot[1, 2] += new_h / 2.0 - h / 2.0
     return cv2.warpAffine(
         image,
-        rot_mat,
-        (w, h),
+        rot,
+        (new_w, new_h),
         flags=cv2.INTER_CUBIC,
+        borderMode=cv2.BORDER_CONSTANT,
+        borderValue=(255, 255, 255) if image.ndim == 3 else 255,
+    )
+
+
+def _col_sharpness(mask: np.ndarray, shear: float) -> float:
+    """How sharply vertical strokes stack into columns after shearing x' = x + shear*(y-cy)."""
+    h, w = mask.shape[:2]
+    pad = int(np.ceil(abs(shear) * h / 2.0))
+    m = np.float32([[1.0, shear, -shear * h / 2.0 + pad], [0.0, 1.0, 0.0]])
+    sheared = cv2.warpAffine(mask, m, (w + 2 * pad, h), flags=cv2.INTER_LINEAR, borderValue=0)
+    profile = sheared.sum(axis=0, dtype=np.float64) / 255.0
+    return float(np.sum(np.diff(profile) ** 2))
+
+
+def estimate_text_shear(image: np.ndarray, max_angle: float = 15.0) -> float:
+    """Estimate the horizontal shear factor that makes character strokes vertical.
+
+    Returns 0.0 unless vertical-stroke alignment improves clearly, so upright print,
+    natural handwriting slant and weak signals are left untouched."""
+    if image.size == 0:
+        return 0.0
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) if image.ndim == 3 else image
+    mask = _text_mask(gray)
+    if np.count_nonzero(mask) < 50:
+        return 0.0
+
+    base = _col_sharpness(mask, 0.0)
+    angles = np.arange(-max_angle, max_angle + 0.01, 1.0)
+    scores = [_col_sharpness(mask, float(np.tan(np.radians(a)))) for a in angles]
+    best = float(angles[int(np.argmax(scores))])
+    fine = np.arange(best - 1.0, best + 1.01, 0.2)
+    fine_scores = [_col_sharpness(mask, float(np.tan(np.radians(a)))) for a in fine]
+    best = float(fine[int(np.argmax(fine_scores))])
+
+    if base <= 0 or max(fine_scores) < 1.15 * base or abs(best) < 1.0:
+        return 0.0
+    return float(np.tan(np.radians(best)))
+
+
+def deshear(image: np.ndarray) -> np.ndarray:
+    """Straighten slanted/keystoned characters so strokes stand vertical (after deskew)."""
+    shear = estimate_text_shear(image)
+    if shear == 0.0:
+        return image
+    h, w = image.shape[:2]
+    pad = int(np.ceil(abs(shear) * h / 2.0))
+    m = np.float32([[1.0, shear, -shear * h / 2.0 + pad], [0.0, 1.0, 0.0]])
+    return cv2.warpAffine(
+        image, m, (w + 2 * pad, h), flags=cv2.INTER_CUBIC,
         borderMode=cv2.BORDER_CONSTANT,
         borderValue=(255, 255, 255) if image.ndim == 3 else 255,
     )

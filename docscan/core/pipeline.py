@@ -8,7 +8,7 @@ import numpy as np
 from docscan.config import settings
 from docscan.core.binarize import binarize, camscanner_clean_plain_text
 from docscan.core.denoise import denoise
-from docscan.core.geometry import deskew, order_points, rotate90, warp
+from docscan.core.geometry import deshear, deskew, order_points, rotate90, warp
 from docscan.core.illumination import apply_clahe, remove_shadows
 from docscan.core.io_utils import resize_to_max
 from docscan.core.modes import classify_document_mode
@@ -89,7 +89,7 @@ def process(
     # 2. Rotation & deskew (straighten residual tilt so it is level and straight)
     if params.rotation != 0:
         warped = rotate90(warped, params.rotation)
-    warped = deskew(warped)
+    warped = deshear(deskew(warped))
     timings["warp_and_geom_ms"] = round((time.perf_counter() - t0) * 1000, 2)
 
     # 3. Downscale for preview if requested

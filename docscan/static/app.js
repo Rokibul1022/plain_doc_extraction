@@ -767,20 +767,20 @@
 
     state.pages.forEach((p, idx) => {
       const card = document.createElement("div");
-      card.className = `page-card ${idx === state.activePageIndex ? "active" : ""}`;
+      card.className = `page-thumb-card ${idx === state.activePageIndex ? "active" : ""}`;
       card.dataset.index = idx;
 
       const img = document.createElement("img");
-      img.className = "page-card-thumb";
+      img.className = "page-thumb-img";
       img.src = p.thumbUrl || p.previewUrl;
       img.alt = `Page ${idx + 1}`;
 
       const num = document.createElement("span");
-      num.className = "page-card-num";
+      num.className = "page-thumb-badge";
       num.textContent = `${idx + 1}`;
 
       const delBtn = document.createElement("button");
-      delBtn.className = "page-card-del";
+      delBtn.className = "page-thumb-delete";
       delBtn.title = "Delete Page";
       delBtn.innerHTML = "&times;";
       delBtn.addEventListener("click", (e) => {
@@ -811,7 +811,7 @@
       state.pages[index].thumbUrl = url;
       const card = DOM.pagesCarousel.children[index];
       if (card) {
-        const thumb = card.querySelector(".page-card-thumb");
+        const thumb = card.querySelector(".page-thumb-img");
         if (thumb) thumb.src = url;
       }
     }
