@@ -54,13 +54,12 @@ eval/inspect/
 Thumbs.db
 desktop.ini
 
-# Local-only data (real vehicles / plate numbers, third-party photos) and generated results
+# Local-only data (real vehicles / plate numbers, third-party photos); eval/ results are tracked
 /LPR catagory/
 /LPR_200 1st/
 /new samples+3d/
 /labels*.csv
 /labels (1).csv
-/eval/
 /feature checklist/
 /_archive/
 *.zip
