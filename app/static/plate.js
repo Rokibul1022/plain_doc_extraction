@@ -191,44 +191,67 @@
     });
   }
 
+  function readCard(d) {
+    const card = el("div", "plate-card");
+    const head = el("div", "plate-head");
+    head.appendChild(el("strong", "", d.mode === "relief" ? "Embossed plate reader" : "Plate reader"));
+    head.appendChild(el("span", `verdict ${d.verdict}`, VERDICT_TEXT[d.verdict] || d.verdict));
+    card.appendChild(head);
+    const top = d.letter ? `${d.top}-${d.letter}` : d.top;
+    card.appendChild(el("div", "plate-text bn" + (top ? "" : " empty"), top || "top row not recognised"));
+    card.appendChild(el("div", "plate-text bn", d.number));
+    const chipsEl = el("div", "chips");
+    chipsEl.appendChild(el("span", "chip fix", `${d.mode} reader`));
+    chipsEl.appendChild(el("span", "chip fix", `corners: ${d.corner_method}`));
+    card.appendChild(chipsEl);
+    const names = [["result", "Result"], ["page", d.mode === "relief" ? "Relief outlines" : "Plain page"], ["straight", "Straightened"], ["original", "Original + corners"]];
+    const tabs = el("div", "view-tabs");
+    const stage = el("div", "view-stage");
+    const img = el("img");
+    stage.appendChild(img);
+    const show = (k) => {
+      img.src = d.images[k];
+      img.alt = k;
+      [...tabs.children].forEach((b) => b.classList.toggle("active", b.dataset.k === k));
+    };
+    names.forEach(([k, n]) => {
+      const b = el("button", "view-tab", n);
+      b.dataset.k = k;
+      b.addEventListener("click", () => show(k));
+      tabs.appendChild(b);
+    });
+    card.appendChild(tabs);
+    card.appendChild(stage);
+    show("result");
+    card.appendChild(el("div", "quality-line", `${d.width}×${d.height} · ${d.elapsed_s}s`));
+    return card;
+  }
+
   async function scanImage(file) {
     const block = el("div");
     block.appendChild(el("div", "file-title", file.name));
     const status = el("div", "no-plates");
-    const spin = el("span", "spinner-inline");
-    status.appendChild(spin);
-    status.appendChild(document.createTextNode("Scanning…"));
+    status.appendChild(el("span", "spinner-inline"));
+    status.appendChild(document.createTextNode("Reading…"));
     block.appendChild(status);
     $("imageResults").prepend(block);
 
     const fd = new FormData();
     fd.append("file", file);
+    fd.append("mode", $("embossedRead").checked ? "relief" : "auto");
     try {
-      const res = await fetch("/api/plate/scan", { method: "POST", body: fd });
+      const res = await fetch("/api/plate/read", { method: "POST", body: fd });
       if (!res.ok) throw new Error((await res.json()).detail || `HTTP ${res.status}`);
       const data = await res.json();
       status.remove();
-      const grid = el("div", "scan-block");
-      const scene = el("div", "scene-card");
-      const im = el("img");
-      im.src = data.annotated;
-      im.alt = "annotated scene";
-      scene.appendChild(im);
-      scene.appendChild(el("div", "scene-meta"));
-      scene.lastChild.appendChild(el("span", "", `${data.width}×${data.height}`));
-      scene.lastChild.appendChild(el("span", "", `${data.plates.length} plate(s) · ${data.elapsed_s}s`));
-      grid.appendChild(scene);
-      const col = el("div", "plates-col");
-      if (!data.plates.length) col.appendChild(el("div", "no-plates", "No plate found in this image."));
-      data.plates.forEach((p) => col.appendChild(plateCard(p, `Plate ${p.index}`)));
-      grid.appendChild(col);
-      block.appendChild(grid);
+      block.appendChild(readCard(data));
     } catch (err) {
       status.textContent = `Error: ${err.message}`;
       toast(err.message, "error");
     }
   }
 
+  document.querySelector("#dropImage .cv-opt").addEventListener("click", (e) => e.stopPropagation());
   wireDrop($("dropImage"), $("fileImage"), $("pickImage"), async (files) => {
     $("dropImage").classList.add("compact");
     for (const f of files) await scanImage(f);

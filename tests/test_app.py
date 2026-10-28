@@ -33,3 +33,23 @@ def test_opencv_route_accepts_the_relief_option():
 
 def test_ocr_route_is_mounted():
     assert client.get("/api/plate/capabilities").status_code == 200
+
+
+def test_read_endpoint_runs_the_new_pipeline():
+    for mode, code in (("auto", 200), ("relief", 200), ("ink", 200), ("bogus", 400)):
+        r = client.post("/api/plate/read", files={"file": ("p.png", _png(), "image/png")}, data={"mode": mode})
+        assert r.status_code == code, mode
+    forced = {m: client.post("/api/plate/read", files={"file": ("p.png", _png(), "image/png")}, data={"mode": m}).json()["mode"] for m in ("ink", "relief")}
+    assert forced == {"ink": "ink", "relief": "relief"}  # the form field really selects the reader (the UI checkbox relies on it)
+    d = client.post("/api/plate/read", files={"file": ("p.png", _png(), "image/png")}).json()
+    assert d["verdict"] in ("readable", "uncertain", "unreadable") and len(d["digits"]) == 6
+    assert len(d["digits"]) == 6 and d["number"] == d["digits"][:2] + "-" + d["digits"][2:]
+    assert not any("conf" in k for k in d)  # no confidence numbers are exposed
+    assert set(d["images"]) == {"result", "page", "straight", "original"} and d["images"]["result"].startswith("data:image/png")
+    assert client.post("/api/plate/read", files={"file": ("p.png", b"", "image/png")}).status_code == 400
+
+
+def test_image_tab_uses_the_read_endpoint():
+    js = client.get("/static/plate.js").text
+    assert "/api/plate/read" in js and "embossedRead" in js
+    assert 'id="embossedRead"' in client.get("/").text

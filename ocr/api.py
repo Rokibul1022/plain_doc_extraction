@@ -11,9 +11,10 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-from fastapi import APIRouter, File, HTTPException, Response, UploadFile, status
+from fastapi import APIRouter, File, Form, HTTPException, Response, UploadFile, status
 
 from opencv.imgio import encode_image, load_image_from_bytes
+from ocr.pipeline import read_plate, render_report
 from ocr.scan import PlateResult, get_detector, get_ocr, scan_image
 from ocr.video import PlateTrackResult, scan_video
 
@@ -50,6 +51,7 @@ class AssetStore:
 
 
 assets = AssetStore()
+_READ_SLOTS = asyncio.Semaphore(int(os.environ.get("OCR_MAX_CONCURRENT", "2")))  # reads are CPU-bound: bound them per process
 _jobs: dict[str, dict] = {}
 _jobs_lock = threading.Lock()
 
@@ -119,6 +121,45 @@ async def capabilities():
     det = await asyncio.to_thread(lambda: get_detector().learned.available)
     ocr = await asyncio.to_thread(lambda: get_ocr().available)
     return {"learned_detector": det, "ocr": ocr, "max_video_mb": MAX_VIDEO_BYTES // (1024 * 1024)}
+
+
+def _uri(img: np.ndarray, png: bool = True) -> str:
+    import base64
+
+    data, mime = _enc(img, png=png)
+    return f"data:{mime};base64," + base64.b64encode(data).decode()
+
+
+@router.post("/read")
+async def read(file: UploadFile = File(...), mode: str = Form("auto")):
+    """The full reading pipeline (YOLO / crop -> OpenCV scan -> ink and relief readers -> checked result).
+
+    `mode`: "auto" lets the more confident reader win, "ink" or "relief" forces one (relief = embossed plates, no ink).
+    Digits the readers are not sure of come back as "?"; nothing is guessed silently."""
+    if mode not in ("auto", "ink", "relief"):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "mode must be auto, ink or relief")
+    data = await file.read()
+    if not data:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Empty file")
+    if len(data) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, "Image too large.")
+    try:
+        img = await asyncio.to_thread(load_image_from_bytes, data, MAX_IMAGE_DIM)
+    except ValueError as exc:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, str(exc))
+    t0 = time.perf_counter()
+    async with _READ_SLOTS:
+        rep = await asyncio.to_thread(read_plate, img, None if mode == "auto" else mode)
+    shown = img.copy()
+    cv2.polylines(shown, [rep.corners.astype(np.int32)], True, (0, 220, 0), max(2, img.shape[1] // 200), cv2.LINE_AA)
+    return {
+        "width": img.shape[1], "height": img.shape[0], "verdict": rep.verdict, "mode": rep.mode,
+        "text": rep.text, "top": rep.top, "letter": rep.letter, "digits": rep.digits,
+        "number": f"{rep.digits[:2]}-{rep.digits[2:]}", "corner_method": rep.corner_method,
+        "images": {"result": _uri(render_report(rep)), "page": _uri(rep.page), "straight": _uri(rep.rectified),
+                   "original": _uri(shown, png=False)},
+        "elapsed_s": round(time.perf_counter() - t0, 2),
+    }
 
 
 @router.post("/scan")

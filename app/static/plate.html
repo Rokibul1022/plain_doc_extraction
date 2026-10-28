@@ -48,7 +48,8 @@
         <input type="file" id="fileImage" accept="image/*" multiple style="display:none">
         <div class="dropzone-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
         <h2 class="dropzone-title">Drop CCTV frames or car photos</h2>
-        <p class="dropzone-desc">Finds every plate, repairs blur, noise and low light, and returns an easily readable plate with its text and an honest reliability score.</p>
+        <p class="dropzone-desc">Finds the plate (YOLO), straightens and cleans it, and reads the number with both the ink reader and the embossed-plate reader. Digits it is not sure of show as "?", with a readable / uncertain / unreadable verdict.</p>
+        <label class="cv-opt" title="Force the embossed-plate reader (characters stamped in the plate colour, no ink)"><input type="checkbox" id="embossedRead"> Embossed (3D) plate</label>
         <button class="btn btn-primary" id="pickImage">Select images</button>
       </div>
       <div id="imageResults"></div>
@@ -92,7 +93,7 @@
   </main>
 
   <div id="toastContainer"></div>
-  <script src="/static/plate.js?v=2"></script>
+  <script src="/static/plate.js?v=3"></script>
   <script src="/opencv-static/opencv.js?v=2"></script>
 </body>
 </html>
