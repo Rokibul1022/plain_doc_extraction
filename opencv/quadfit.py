@@ -18,6 +18,8 @@ from opencv.geometry import order_points
 BODY_W = 0.5
 LEAK_W = 0.9
 _BODY: np.ndarray | None = None  # plate body colour for the image being fitted (set by best_quad)
+_BODYOK: np.ndarray | None = None  # uint8 mask of the pixels within 26 of _BODY (set with it)
+_SCORE_CACHE: dict = {}  # edge_support results for the image being fitted
 EXTEND = 0.25  # corners may lie this far (share of the image size) beyond the frame: plates cut off by the picture
 WORK = 320  # longest side the search runs at
 
@@ -40,6 +42,18 @@ def _valid(q: np.ndarray, shape) -> bool:
     return 1.1 <= w / max(h, 1e-3) <= 6.0
 
 
+_T_CACHE: dict = {}
+
+
+def _t_col(lo: float, hi: float, n: int) -> np.ndarray:
+    """np.linspace(lo, hi, n) as a column, cached: the same few lengths recur thousands of times per image."""
+    k = (lo, hi, n)
+    v = _T_CACHE.get(k)
+    if v is None:
+        v = _T_CACHE[k] = np.linspace(lo, hi, n)[:, None]
+    return v
+
+
 def _sample(lab: np.ndarray, pts: np.ndarray) -> np.ndarray:
     h, w = lab.shape[:2]
     x = np.clip(pts[:, 0], 0, w - 1.001)
@@ -48,31 +62,6 @@ def _sample(lab: np.ndarray, pts: np.ndarray) -> np.ndarray:
     fx, fy = (x - x0)[:, None], (y - y0)[:, None]
     return (lab[y0, x0] * (1 - fx) * (1 - fy) + lab[y0, x0 + 1] * fx * (1 - fy)
             + lab[y0 + 1, x0] * (1 - fx) * fy + lab[y0 + 1, x0 + 1] * fx * fy)
-
-
-def side_support(lab: np.ndarray, p: np.ndarray, q: np.ndarray, centre: np.ndarray, off: float,
-                 body: np.ndarray | None = None) -> tuple[float, float]:
-    """(mean colour step, share of the side that has a clear step) across side p->q, outside vs inside."""
-    h, w = lab.shape[:2]
-    n = int(max(8, np.linalg.norm(q - p) / 2))
-    t = np.linspace(0.04, 0.96, n)[:, None]
-    pts = p[None] * (1 - t) + q[None] * t
-    d = q - p
-    nrm = np.array([-d[1], d[0]]) / (np.linalg.norm(d) + 1e-9)
-    if np.dot(nrm, pts.mean(0) - centre) < 0:
-        nrm = -nrm  # point outward
-    out_pts, in_pts = pts + nrm * off, pts - nrm * off
-    on_frame = (out_pts[:, 0] < 0) | (out_pts[:, 0] > w - 1) | (out_pts[:, 1] < 0) | (out_pts[:, 1] > h - 1)
-    if on_frame.mean() > 0.6:  # the side lies on the frame: good only if what is just inside still looks like plate body
-        if body is None:
-            return 12.0, 0.5
-        dist = np.linalg.norm(_sample(lab, in_pts) - body, axis=1)
-        ok = float((dist < 22.0).mean())
-        return 4.0 + 24.0 * ok, 0.1 + 0.75 * ok
-    a, b = _sample(lab, out_pts), _sample(lab, in_pts)
-    step = np.linalg.norm(a - b, axis=1)
-    step[on_frame] = 28.0
-    return float(step.mean()), float((step > 10.0).mean())
 
 
 def _body_colour(lab: np.ndarray, q: np.ndarray) -> np.ndarray:
@@ -89,42 +78,88 @@ def body_share(lab: np.ndarray, q: np.ndarray, body: np.ndarray) -> float:
     """Share of the quad's in-frame pixels that look like plate body; background spill lowers it."""
     m = np.zeros(lab.shape[:2], np.uint8)
     cv2.fillConvexPoly(m, np.round(q).astype(np.int32), 1)
-    px = lab[m > 0]
-    if len(px) == 0:
+    n = cv2.countNonZero(m)
+    if n == 0:
         return 0.0
+    if _BODYOK is not None and body is _BODY:  # per-image mask: no per-call norm over every pixel of the quad
+        return cv2.countNonZero(m & _BODYOK) / n
+    px = lab[m > 0]
     return float((np.linalg.norm(px - body, axis=1) < 26.0).mean())
 
 
-def side_leak(lab: np.ndarray, p: np.ndarray, q: np.ndarray, centre: np.ndarray, off: float, body: np.ndarray) -> float:
-    """Share of the band just OUTSIDE this side that still looks like plate body: high means the side cuts through
-    the plate (e.g. across the digits) instead of lying on its border."""
-    h, w = lab.shape[:2]
-    n = int(max(8, np.linalg.norm(q - p) / 2))
-    t = np.linspace(0.08, 0.92, n)[:, None]
-    pts = p[None] * (1 - t) + q[None] * t
-    d = q - p
-    nrm = np.array([-d[1], d[0]]) / (np.linalg.norm(d) + 1e-9)
-    if np.dot(nrm, pts.mean(0) - centre) < 0:
-        nrm = -nrm
-    hits, tot = 0, 0
-    for k in (2.0, 3.5, 5.0):
-        o = pts + nrm * off * k
-        inside = (o[:, 0] >= 0) & (o[:, 0] <= w - 1) & (o[:, 1] >= 0) & (o[:, 1] <= h - 1)
-        if inside.any():
-            dist = np.linalg.norm(_sample(lab, o[inside]) - body, axis=1)
-            hits += int((dist < 24.0).sum())
-            tot += int(inside.sum())
-    return hits / tot if tot else 0.0
+def _set_body(lab: np.ndarray, body: np.ndarray | None) -> None:
+    """Fix the plate body colour for the image being fitted and precompute which pixels are within 26 of it."""
+    global _BODY, _BODYOK
+    _BODY = body
+    _BODYOK = None if body is None else (np.linalg.norm(lab - body, axis=2) < 26.0).astype(np.uint8)
 
 
 def edge_support(lab: np.ndarray, q: np.ndarray, off: float) -> float:
+    """Score a quad: how strongly each side lies on a colour step (outside vs inside), minus how much plate-body
+    colour leaks just outside each side, plus the share of the quad that is plate body.
+
+    All colour samples of the four sides are gathered and read in ONE batch (same values as sampling side by side),
+    and repeated quads are served from a per-image cache."""
+    key = (q.dtype.str, q.tobytes(), float(off))
+    hit = _SCORE_CACHE.get(key)
+    if hit is not None:
+        return hit
+    h, w = lab.shape[:2]
     c = q.mean(0)
     body = _BODY if _BODY is not None else _body_colour(lab, q)
-    tot = 0.0
+    plan, pts_all = [], []
     for i in range(4):
-        m, f = side_support(lab, q[i], q[(i + 1) % 4], c, off, body)
-        tot += min(m, 40.0) / 40.0 * 0.5 + f * 0.5 - LEAK_W * side_leak(lab, q[i], q[(i + 1) % 4], c, off, body)
-    return tot / 4.0 + BODY_W * body_share(lab, q, body)
+        p, qq = q[i], q[(i + 1) % 4]
+        n = int(max(8, np.linalg.norm(qq - p) / 2))
+        d = qq - p
+        nrm_unit = np.array([-d[1], d[0]]) / (np.linalg.norm(d) + 1e-9)
+        # -- colour step across the side
+        t = _t_col(0.04, 0.96, n)
+        pts = p[None] * (1 - t) + qq[None] * t
+        nrm = -nrm_unit if np.dot(nrm_unit, pts.sum(0) / n - c) < 0 else nrm_unit
+        out_pts, in_pts = pts + nrm * off, pts - nrm * off
+        on_frame = (out_pts[:, 0] < 0) | (out_pts[:, 0] > w - 1) | (out_pts[:, 1] < 0) | (out_pts[:, 1] > h - 1)
+        frame_side = np.count_nonzero(on_frame) / n > 0.6
+        pts_all.append(in_pts)
+        if not frame_side:
+            pts_all.append(out_pts)
+        # -- plate-body colour just outside the side (leak)
+        t2 = _t_col(0.08, 0.92, n)
+        pts2 = p[None] * (1 - t2) + qq[None] * t2
+        nrm2 = -nrm_unit if np.dot(nrm_unit, pts2.sum(0) / n - c) < 0 else nrm_unit
+        leak_sets = []
+        for k in (2.0, 3.5, 5.0):
+            o = pts2 + nrm2 * off * k
+            inside = (o[:, 0] >= 0) & (o[:, 0] <= w - 1) & (o[:, 1] >= 0) & (o[:, 1] <= h - 1)
+            if inside.any():
+                pts_all.append(o[inside])
+                leak_sets.append(int(inside.sum()))
+        plan.append((n, on_frame, frame_side, leak_sets))
+    smp = _sample(lab, np.concatenate(pts_all))
+    pos, tot = 0, 0.0
+    for n, on_frame, frame_side, leak_sets in plan:
+        a_in = smp[pos: pos + n]
+        pos += n
+        if frame_side:  # the side lies on the frame: good only if what is just inside still looks like plate body
+            ok = np.count_nonzero(np.linalg.norm(a_in - body, axis=1) < 22.0) / n
+            m, f = 4.0 + 24.0 * ok, 0.1 + 0.75 * ok
+        else:
+            a_out = smp[pos: pos + n]
+            pos += n
+            step = np.linalg.norm(a_out - a_in, axis=1)
+            step[on_frame] = 28.0
+            m, f = float(step.sum() / n), np.count_nonzero(step > 10.0) / n
+        hits = n_tot = 0
+        for cnt in leak_sets:
+            dist = np.linalg.norm(smp[pos: pos + cnt] - body, axis=1)
+            pos += cnt
+            hits += int((dist < 24.0).sum())
+            n_tot += cnt
+        leak = hits / n_tot if n_tot else 0.0
+        tot += min(m, 40.0) / 40.0 * 0.5 + f * 0.5 - LEAK_W * leak
+    val = tot / 4.0 + BODY_W * body_share(lab, q, body)
+    _SCORE_CACHE[key] = val
+    return val
 
 
 def candidates(img: np.ndarray):
@@ -330,12 +365,14 @@ def _line_from(p, q):
 
 
 def _intersect(l1, l2):
+    """Intersection of two lines given as (angle of the unit normal, offset): Cramer's rule on the 2x2 system."""
     a1, r1 = l1
     a2, r2 = l2
-    A = np.array([[np.cos(a1), np.sin(a1)], [np.cos(a2), np.sin(a2)]])
-    if abs(np.linalg.det(A)) < 1e-3:
+    c1, s1, c2, s2 = np.cos(a1), np.sin(a1), np.cos(a2), np.sin(a2)
+    det = c1 * s2 - s1 * c2
+    if abs(det) < 1e-3:
         return None
-    return np.linalg.solve(A, [r1, r2])
+    return np.array([(r1 * s2 - s1 * r2) / det, (c1 * r2 - r1 * c2) / det])
 
 
 def _quad_from_lines(L):
@@ -425,13 +462,13 @@ def _global_body(small: np.ndarray, lab: np.ndarray, tq: list[np.ndarray]) -> np
 
 def best_quad(img: np.ndarray) -> tuple[np.ndarray, float] | None:
     """Best edge-verified quad (in input-image coordinates) and its support score."""
-    global _BODY
+    _SCORE_CACHE.clear()
     cands, lab, s = candidates(img)
     if not cands:
         return None
     small = cv2.resize(img, (lab.shape[1], lab.shape[0]), interpolation=cv2.INTER_AREA if s < 1 else cv2.INTER_CUBIC)
     seeded, sbody = seeded_candidates(lab)
-    _BODY = sbody
+    _set_body(lab, sbody)
     good = [q for q in seeded if body_share(lab, q, sbody) >= 0.5 and cv2.contourArea(q) >= 0.12 * lab.shape[0] * lab.shape[1]]
     cands = good if good else cands + seeded  # the segmented plate body is the most reliable anchor: trust it first
     tight = bool(good)
@@ -441,11 +478,15 @@ def best_quad(img: np.ndarray) -> tuple[np.ndarray, float] | None:
         a = cv2.contourArea(q.astype(np.float32)) / float(lab.shape[0] * lab.shape[1])
         scored.append((edge_support(lab, q, off) + 0.25 * a, q))
     scored.sort(key=lambda t: -t[0])
-    top = []
+    top, fitted = [], {}
     for sc, q in scored[:6]:  # refine the best few, keep the winner after refinement
-        r = fit_lines(lab, q, off, 0.12 if tight else 0.55)
+        qkey = (q.dtype.str, q.tobytes())
+        if qkey not in fitted:  # near-duplicate candidates from different cluster counts are fitted once
+            fitted[qkey] = fit_lines(lab, q, off, 0.12 if tight else 0.55)
+        r = fitted[qkey]
         a = cv2.contourArea(r.astype(np.float32)) / float(lab.shape[0] * lab.shape[1])
         top.append((edge_support(lab, r, off) + 0.25 * a, r))
     sc, q = max(top, key=lambda t: t[0])
-    _BODY = None
+    _set_body(lab, None)
+    _SCORE_CACHE.clear()
     return (q / s).astype(np.float32), float(sc)
