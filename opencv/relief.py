@@ -163,20 +163,19 @@ def _plate_mask(h: int, w: int) -> np.ndarray:
     return cv2.GaussianBlur(m, (0, 0), 2.5)
 
 
-def relief_page(img: np.ndarray, out_width: int = 960) -> np.ndarray:
-    """Plain page (uint8, white paper) that draws the plate's raised characters as dark outlines.
+def relief_lines(img: np.ndarray, work_h: int = 360) -> np.ndarray:
+    """Line strength (float32, 0 flat .. 1 strong contour) of the plate's relief, at `work_h` pixels height.
 
-    The light and shadow edges of the embossing are turned into line strength: the page is white where the plate is
-    flat and dark where the relief changes, so every raised glyph shows as a crisp contour that can be read by eye.
-      denoise (NLM) -> flatten light (high-pass, contrast-normalised) -> edge strength at stroke scale ->
-      mask bolts / rim / background -> contrast stretch -> crop to the text -> upscale to the page width."""
-    s = 360.0 / img.shape[0]
+    denoise (NLM) -> flatten light (high-pass, contrast-normalised) -> edge strength at stroke scale ->
+    mask bolts / rim / background -> remove long straight rim runs -> contrast stretch."""
+    s = work_h / img.shape[0]
     im = cv2.resize(img, None, fx=s, fy=s, interpolation=cv2.INTER_CUBIC if s > 1 else cv2.INTER_AREA)
     lum = _luminance(im)
     h, w = lum.shape
+    k = work_h / 360.0  # all scales below were tuned at 360 px height
     den = cv2.fastNlMeansDenoising(np.clip(lum, 0, 255).astype(np.uint8), None, 6, 5, 15).astype(np.float32)
-    hp = _highpass(cv2.GaussianBlur(den, (0, 0), 0.8), max(8.0, 0.15 * h))
-    g = cv2.GaussianBlur(hp, (0, 0), 1.0)
+    hp = _highpass(cv2.GaussianBlur(den, (0, 0), max(0.5, 0.8 * k)), max(8.0 * k, 0.15 * h))
+    g = cv2.GaussianBlur(hp, (0, 0), max(0.6, 1.0 * k))
     mag = np.hypot(cv2.Sobel(g, cv2.CV_32F, 1, 0), cv2.Sobel(g, cv2.CV_32F, 0, 1))
     mask = _plate_mask(h, w)
     ref = float(np.percentile(mag[mask > 0.5], 90)) + 1e-6
@@ -188,7 +187,33 @@ def relief_page(img: np.ndarray, out_width: int = 960) -> np.ndarray:
     rim = cv2.dilate(longh | longv, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7)))
     line = line * (1.0 - cv2.GaussianBlur(rim.astype(np.float32), (0, 0), 1.2))
     # drop the faint texture (grime, paint grain) and stretch what is left; keeps real glyph contours strong
-    line = np.clip((line - 0.16) / 0.55, 0.0, 1.0) ** 0.85
+    return np.clip((line - 0.16) / 0.55, 0.0, 1.0) ** 0.85
+
+
+def relief_view(img: np.ndarray, work_h: int = 160) -> np.ndarray:
+    """Reader input for embossed plates: the signed shading of the relief, uint8, flat plate = 128.
+
+    Light and shadow are kept as they are (lit ridge bright, shadowed face dark) after the lighting, colour and paint
+    tone are removed (high-pass, contrast-normalised), so no information is thrown away and nothing is differentiated
+    twice (an edge map of a shaded image rings). A model trained on synthetic embossed plates lit from random
+    directions sees real ones in the same form. Uncropped (the layout is kept), `work_h` pixels high."""
+    s = work_h / img.shape[0]
+    im = cv2.resize(img, None, fx=s, fy=s, interpolation=cv2.INTER_CUBIC if s > 1 else cv2.INTER_AREA)
+    lum = _luminance(im)
+    h = lum.shape[0]
+    k = work_h / 360.0
+    hp = _highpass(cv2.GaussianBlur(lum, (0, 0), max(0.5, 0.8 * k)), max(8.0 * k, 0.15 * h))
+    return np.clip(128.0 + 42.0 * np.clip(hp, -3.0, 3.0), 0, 255).astype(np.uint8)
+
+
+def relief_page(img: np.ndarray, out_width: int = 960) -> np.ndarray:
+    """Plain page (uint8, white paper) that draws the plate's raised characters as dark outlines.
+
+    The light and shadow edges of the embossing are turned into line strength: the page is white where the plate is
+    flat and dark where the relief changes, so every raised glyph shows as a crisp contour that can be read by eye.
+    The line map (see `relief_lines`) is cropped to the text, scaled to the page width and slightly firmed up."""
+    line = relief_lines(img, 360)
+    h, w = line.shape
     page = 255.0 - 255.0 * line
     # crop to the text with a margin
     ink = line > 0.35

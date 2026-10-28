@@ -55,3 +55,12 @@ def test_concurrent_scans_in_threads_match_sequential_scans():
         parallel = list(pool.map(lambda i: find_corners(i)[0], imgs * 3))
     for k, corners in enumerate(parallel):
         assert np.array_equal(corners, sequential[k % len(imgs)])
+
+
+def test_large_plate_crops_and_embossed_mode_are_handled():
+    """A tall crop is downscaled for the page step (not upscaled 3x), and relief="force" skips the ink pipeline."""
+    big = cv2.resize(synthetic_plate(), (900, 600), interpolation=cv2.INTER_CUBIC)
+    r = scan(big)
+    assert r.document.shape[1] == 960 and (r.document == 255).mean() > 0.5
+    forced = scan(big, relief="force")
+    assert forced.document.ndim == 2 and forced.document.shape[1] == 960

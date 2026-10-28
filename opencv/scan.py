@@ -26,7 +26,7 @@ class CvScan:
     method: str
     rectified: np.ndarray
     restored: np.ndarray
-    document: np.ndarray  # the plain page: white background, clean dark characters, level
+    document: np.ndarray | None  # the plain page: white background, clean dark characters, level (None if make_page=False)
 
 
 def _full_frame(img: np.ndarray) -> np.ndarray:
@@ -72,10 +72,10 @@ def find_corners(img: np.ndarray) -> tuple[np.ndarray, str]:
     return _full_frame(img), "full frame"
 
 
-def scan(img: np.ndarray, relief: str = "auto") -> CvScan:
+def scan(img: np.ndarray, relief: str = "auto", make_page: bool = True) -> CvScan:
     trimmed, (ox, oy) = trim_letterbox(img)
     corners, how = find_corners(trimmed)
     rect = rectify(trimmed, corners)
     restored = restore_plate(rect).image  # classical clean-up only: low light, glare, de-block, denoise, upscale, contrast
-    document = make_document(restored, relief=relief)  # relief: "auto", "force" (embossed 3D plate) or "off"
+    document = make_document(restored, relief=relief) if make_page else None  # relief: "auto", "force" (embossed 3D plate) or "off"
     return CvScan(corners + np.float32([ox, oy]), how, rect, restored, document)

@@ -14,6 +14,7 @@ from opencv.layout import clean_ink
 from opencv.readable import _smoothstep, _text_is_light, best_channel
 
 RELIEF_COV, RELIEF_COH = 0.08, 0.30  # normal ink map weaker than this -> try the 3D relief reading
+PAGE_H, PAGE_MAX_H = 128, 200  # the page step is tuned for plates ~100-130 px high; taller crops are downscaled to PAGE_H first (slower, not better)
 WORK_SCALE = 3.0  # work at 3x so strokes come out smooth after thresholding
 
 
@@ -287,6 +288,15 @@ def make_document(img: np.ndarray, *, out_width: int = 960, margin: float = 0.07
     Blurry CCTV plates give noisy ink maps; instead of thresholding them directly the strokes are
     extracted with hysteresis, speckle and frame are removed, and the outlines are smoothed so the
     page looks like clean print rather than torn paper."""
+    if relief == "force":  # embossed plate: there is no ink to threshold, so skip the whole ink pipeline
+        from opencv import relief as RL
+
+        if info is not None:
+            info["relief_used"] = True
+        return RL.relief_page(img, out_width)
+    full = img
+    if img.shape[0] > PAGE_MAX_H:
+        img = cv2.resize(img, None, fx=PAGE_H / img.shape[0], fy=PAGE_H / img.shape[0], interpolation=cv2.INTER_AREA)
     work = img if img.ndim == 3 else cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     work = deskew(work)
     s = 4.0 if max(work.shape[:2]) < 500 else (WORK_SCALE if max(work.shape[:2]) < 700 else 1.0)
@@ -383,7 +393,7 @@ def make_document(img: np.ndarray, *, out_width: int = 960, margin: float = 0.07
     if info is not None:
         info["relief_used"] = rel_used
     if rel_used:  # embossed plate: no ink to threshold, draw the relief contours instead
-        return RL.relief_page(img, out_width)
+        return RL.relief_page(full, out_width)
     inset = np.zeros_like(binary)
     iy, ix = int(0.085 * h0), int(0.065 * w0)  # the plate edge sits ~5-8 % inside the rectified frame
     inset[iy: h0 - iy, ix: w0 - ix] = binary[iy: h0 - iy, ix: w0 - ix]
