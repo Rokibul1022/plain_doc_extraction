@@ -192,7 +192,8 @@ Interactive API docs are at `/docs`.
 | Method and path | Purpose |
 |---|---|
 | `POST /api/opencv/scan` | OpenCV scan. Form fields: `file`, `relief` = `auto` \| `force` \| `off`. Returns `corners`, `method`, `original` (corners drawn), `rectified`, `restored`, `document` (data-URI images), `width`, `height`, `elapsed_s` |
-| `POST /api/plate/scan` | YOLO + OCR on an image. Returns `plates[]` with `detection`, `quality`, `reading`, `verdict`, `document_kind`, `timings_ms` and result image URLs |
+| `POST /api/plate/read` | **The reading pipeline** (used by the Image tab): YOLO / crop -> OpenCV scan -> ink and embossed readers. Form fields: `file`, `mode` = `auto` \| `ink` \| `relief`. Returns `verdict` (readable / uncertain / unreadable), `top` (city word), `letter`, `digits`, `number` (NN-NNNN), `mode`, `corner_method`, `elapsed_s` and result pictures (`result`, `page`, `straight`, `original`). No confidence numbers are exposed |
+| `POST /api/plate/scan` | The older YOLO + OCR route on an image. Returns `plates[]` with `detection`, `quality`, `reading`, `verdict`, `document_kind`, `timings_ms` and result image URLs |
 | `POST /api/plate/video` | start a video job (`fps`, `max_seconds`); returns `job_id` |
 | `GET /api/plate/job/{id}` | job status / progress / result |
 | `GET /api/plate/asset/{scan_id}/{name}` | result images |
@@ -224,6 +225,8 @@ docker build -t plate-app . && docker run --rm -p 8000:8000 plate-app
 ```
 
 Without Docker: `uvicorn opencv.server:app --workers 4`, `uvicorn ocr.server:app --workers 2`.
+
+**Measured (this repo's images, Docker Desktop, CPU only).** `plate-opencv` is 587 MB and `plate-ocr` 822 MB (models baked in; the OCR image also starts with no network). One container uses about 350 MB of memory and stays near 450 MB after 120 reads. A read takes about 2-3 s per plate crop and 3-4 s for a 1920x1080 frame (YOLO with tiling). 60 reads, 6 at a time, gave answers identical to sequential ones. Corrupt or non-image uploads return 400, blank / noise / 1-pixel / 24-megapixel images return an "unreadable" verdict without errors.
 
 **CPU sizing.** One scan is mostly single-threaded, so throughput comes from worker *processes*: set `WORKERS` to the
 CPUs you give the container and keep each worker to one thread (the images do this by default). For the OCR image the
@@ -270,8 +273,14 @@ The OpenCV tests use synthetic plates and need no data. The scan is deterministi
 - Embossed plates come out as outlines, not solid text; shallow or paint-worn relief gives partial results.
 - Settings were tuned on the sets above; other cameras and plate styles may need adjustment. The relief mode was tuned
   on four plates.
-- The OCR route's digit reader was trained on a small set of hand-verified labels; treat its reading as a
-  suggestion unless the verdict says `readable`.
+- **OCR reading (normal plates).** On the 26 labelled plates of the extreme tier, tested by readers that never saw them: 87% of digits
+  (136/156), 17/26 whole numbers, 91% of first-row words (20/22); every plate marked `readable` was fully correct (12/12). The class
+  letter is below 50% right and is not printed. Easy and medium tiers were not tested cleanly (their labelled plates were used for
+  tuning). See `eval/ocr_extreme/`.
+- **OCR reading (embossed plates, no ink).** Only 10 labelled plates exist (9 photos, all Dhaka): leave-out cross-validation gave
+  57/60 digits and 10/10 first-row words, but with that little data the number is optimistic. See `eval/ocr_relief3d/`.
+- Plates are expected upright; a plate rotated by 90 degrees is not recognised. One plate per image is read.
+- Treat the reading as a suggestion unless the verdict says `readable`.
 
 ---
 

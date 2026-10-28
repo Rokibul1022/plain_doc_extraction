@@ -1,0 +1,278 @@
+{
+ "base": {
+  "46d4aeaf-f0ce-4362-82e4-4d1495067caa.jpeg": {
+   "digits": "২০০৩৩৮",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "রাঙ্গামাটি",
+   "city_ok": 0,
+   "letter": "ভ",
+   "letter_ok": 0
+  },
+  "Screenshot_5.png": {
+   "digits": "২২১০৯২",
+   "digits_right": 4,
+   "exact": 0,
+   "city": "রাজশাহী মেট্রো",
+   "city_ok": 0,
+   "letter": "ঙ",
+   "letter_ok": 0
+  },
+  "Screenshot_6.png": {
+   "digits": "৯৯৯৩৬০",
+   "digits_right": 3,
+   "exact": 0,
+   "city": "গাজীপুর",
+   "city_ok": 0,
+   "letter": "ঙ",
+   "letter_ok": 0
+  },
+  "Screenshot_7.png": {
+   "digits": "১১৭৩০৫",
+   "digits_right": 4,
+   "exact": 0,
+   "city": "চট্টগ্রাম",
+   "city_ok": 0,
+   "letter": "ছ",
+   "letter_ok": 0
+  },
+  "Screenshot_10.png": {
+   "digits": "১১৯৪৭৯",
+   "digits_right": 3,
+   "exact": 0,
+   "city": "সিলেট মেট্রো",
+   "city_ok": 0,
+   "letter": "জ",
+   "letter_ok": 0
+  },
+  "Screenshot_11 (1).png": {
+   "digits": "১৪১০০৬",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা মেট্রো",
+   "city_ok": 1,
+   "letter": "ত",
+   "letter_ok": 0
+  },
+  "Screenshot_11.png": {
+   "digits": "১৪১০০৬",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা মেট্রো",
+   "city_ok": 1,
+   "letter": "ত",
+   "letter_ok": 0
+  },
+  "Screenshot_12.png": {
+   "digits": "১৪০৬৪৮",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা",
+   "city_ok": 1,
+   "letter": "ছ",
+   "letter_ok": 0
+  },
+  "Screenshot_13.png": {
+   "digits": "১১২৭৮৯",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা মেট্রো",
+   "city_ok": 1,
+   "letter": "ঠ",
+   "letter_ok": 0
+  },
+  "Screenshot_14.png": {
+   "digits": "১৪০৮১০",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা",
+   "city_ok": 1,
+   "letter": "ধ",
+   "letter_ok": 0
+  }
+ },
+ "tuned_cv": {
+  "46d4aeaf-f0ce-4362-82e4-4d1495067caa.jpeg": {
+   "digits": "২০০৩৩৮",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা মেট্রো",
+   "city_ok": 1,
+   "letter": "ছ",
+   "letter_ok": 0
+  },
+  "Screenshot_5.png": {
+   "digits": "১৪১০৯২",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা",
+   "city_ok": 1,
+   "letter": "থ",
+   "letter_ok": 1
+  },
+  "Screenshot_6.png": {
+   "digits": "১৯১৩৬০",
+   "digits_right": 5,
+   "exact": 0,
+   "city": "ঢাকা",
+   "city_ok": 1,
+   "letter": "থ",
+   "letter_ok": 1
+  },
+  "Screenshot_7.png": {
+   "digits": "১১৭৩০৯",
+   "digits_right": 4,
+   "exact": 0,
+   "city": "ঢাকা",
+   "city_ok": 1,
+   "letter": "থ",
+   "letter_ok": 0
+  },
+  "Screenshot_10.png": {
+   "digits": "১৪১৪৭৪",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা",
+   "city_ok": 1,
+   "letter": "থ",
+   "letter_ok": 1
+  },
+  "Screenshot_11.png": {
+   "digits": "১৪১০০৬",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা মেট্রো",
+   "city_ok": 1,
+   "letter": "ছ",
+   "letter_ok": 1
+  },
+  "Screenshot_11 (1).png": {
+   "digits": "১৪১০০৬",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা মেট্রো",
+   "city_ok": 1,
+   "letter": "ছ",
+   "letter_ok": 1
+  },
+  "Screenshot_12.png": {
+   "digits": "১৪০৬৪৮",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা",
+   "city_ok": 1,
+   "letter": "থ",
+   "letter_ok": 1
+  },
+  "Screenshot_13.png": {
+   "digits": "১১২৭৮৯",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা মেট্রো",
+   "city_ok": 1,
+   "letter": "ছ",
+   "letter_ok": 1
+  },
+  "Screenshot_14.png": {
+   "digits": "১৪০৮১০",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা",
+   "city_ok": 1,
+   "letter": "ধ",
+   "letter_ok": 0
+  }
+ },
+ "tuned_all_insample": {
+  "46d4aeaf-f0ce-4362-82e4-4d1495067caa.jpeg": {
+   "digits": "২০০৩৩৮",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা মেট্রো",
+   "city_ok": 1,
+   "letter": "ট",
+   "letter_ok": 1
+  },
+  "Screenshot_5.png": {
+   "digits": "১৪১০৯২",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা",
+   "city_ok": 1,
+   "letter": "থ",
+   "letter_ok": 1
+  },
+  "Screenshot_6.png": {
+   "digits": "১১১৩৬০",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা",
+   "city_ok": 1,
+   "letter": "থ",
+   "letter_ok": 1
+  },
+  "Screenshot_7.png": {
+   "digits": "১১০৩০৮",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা",
+   "city_ok": 1,
+   "letter": "ধ",
+   "letter_ok": 1
+  },
+  "Screenshot_10.png": {
+   "digits": "১৪১৪৭৪",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা",
+   "city_ok": 1,
+   "letter": "থ",
+   "letter_ok": 1
+  },
+  "Screenshot_11 (1).png": {
+   "digits": "১৪১০০৬",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা মেট্রো",
+   "city_ok": 1,
+   "letter": "ছ",
+   "letter_ok": 1
+  },
+  "Screenshot_11.png": {
+   "digits": "১৪১০০৬",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা মেট্রো",
+   "city_ok": 1,
+   "letter": "ছ",
+   "letter_ok": 1
+  },
+  "Screenshot_12.png": {
+   "digits": "১৪০৬৪৮",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা",
+   "city_ok": 1,
+   "letter": "থ",
+   "letter_ok": 1
+  },
+  "Screenshot_13.png": {
+   "digits": "১১২৭৮৯",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা মেট্রো",
+   "city_ok": 1,
+   "letter": "ছ",
+   "letter_ok": 1
+  },
+  "Screenshot_14.png": {
+   "digits": "১৪০৮১০",
+   "digits_right": 6,
+   "exact": 1,
+   "city": "ঢাকা",
+   "city_ok": 1,
+   "letter": "থ",
+   "letter_ok": 1
+  }
+ }
+}
