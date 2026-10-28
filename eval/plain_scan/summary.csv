@@ -1,0 +1,5 @@
+﻿tier,images,corners_correct_pct,corners_partial,corners_wrong,page_clean,page_usable,page_poor,clean_pct,clean_or_usable_pct,digit_ground_truth
+easy,52,100.0,0,0,34,11,7,65.4,86.5,24
+medium,52,90.4,5,0,22,23,7,42.3,86.5,33
+extreme,51,86.3,6,1,6,29,16,11.8,68.6,26
+ALL,155,92.3,11,1,62,63,30,40.0,80.6,83

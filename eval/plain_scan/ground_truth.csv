@@ -1,0 +1,156 @@
+﻿index,tier,file,corners,page,digits_truth,digits_label_status
+0,easy,3615008.png,correct,clean,৮১০০৬৪,labelled
+1,easy,3624762.png,correct,clean,১৪৫৮৫৭,labelled
+2,easy,3636971.png,correct,clean,০৫০৬৮৫,labelled
+3,easy,3639495.png,correct,poor,১৩৪১৫১,labelled
+4,easy,3651727.png,correct,usable,১১৯০৯৫,labelled
+5,easy,3691667.png,correct,usable,১১০০৩০,labelled
+6,easy,3693049.png,correct,usable,১১০০৯৪,labelled
+7,easy,3696732.png,correct,poor,১১০১৭৭,labelled
+8,easy,3699845.png,correct,clean,৫৬১৭৪৬,labelled
+9,easy,3744325.png,correct,clean,১৩৫০৫৪,labelled
+10,easy,3777312.png,correct,clean,১১০৯০২,labelled
+11,easy,3784473.png,correct,usable,১১৮৪০৪,labelled
+12,easy,3786913.png,correct,usable,১১৮৩৪৯,labelled
+13,easy,3794786.png,correct,poor,১৫৫৭১৩,labelled
+14,easy,3803852.png,correct,clean,১২৫৯২৮,labelled
+15,easy,3806876.png,correct,poor,১১০৮০৯,labelled
+16,easy,3824936.png,correct,usable,১১০০১৫,labelled
+17,easy,3825496.png,correct,clean,১১০০১৩,labelled
+18,easy,3829350.png,correct,clean,১১০৮৯৫,labelled
+19,easy,3867992.png,correct,clean,৫১০৯২৬,labelled
+20,easy,3880964.png,correct,clean,৫১৪১২২,labelled
+21,easy,3887404.png,correct,clean,২৪৪০৩৩,labelled
+22,easy,3906162.png,correct,poor,০৫০৫১৩,labelled
+23,easy,3910739.png,correct,clean,৮১১৩৮৬,labelled
+24,easy,3932719.png,correct,clean,,no label
+25,easy,3947746.png,correct,clean,,no label
+26,easy,3949423.png,correct,poor,,no label
+27,easy,3950189.png,correct,clean,,no label
+28,easy,3951268.png,correct,clean,,no label
+29,easy,3962618.png,correct,clean,,no label
+30,easy,3971392.png,correct,usable,,no label
+31,easy,3976525.png,correct,clean,,no label
+32,easy,4046797.png,correct,clean,,no label
+33,easy,4053334.png,correct,clean,,no label
+34,easy,4074850.png,correct,clean,,no label
+35,easy,4096188.png,correct,clean,,no label
+36,easy,4096993.png,correct,clean,,no label
+37,easy,4099361.png,correct,usable,,no label
+38,easy,4106802.png,correct,poor,,no label
+39,easy,4111058.png,correct,clean,,no label
+40,easy,4129657.png,correct,clean,,no label
+41,easy,4138803.png,correct,clean,,no label
+42,easy,4140533.png,correct,clean,,no label
+43,easy,4146821.png,correct,clean,,no label
+44,easy,4155191.png,correct,clean,,no label
+45,easy,4172348.png,correct,clean,,no label
+46,easy,4174598.png,correct,clean,,no label
+47,easy,4183808.png,correct,usable,,no label
+48,easy,4188269.png,correct,clean,,no label
+49,easy,4194619.png,correct,usable,,no label
+50,easy,4198205.png,correct,clean,,no label
+51,easy,4198664.png,correct,usable,,no label
+52,medium,3592651.png,correct,clean,০০৩১২৮,labelled
+53,medium,3593981.png,correct,clean,১৫৬১৪৪,labelled
+54,medium,3595102.png,correct,usable,১১০৯৮৫,labelled
+55,medium,3612899.png,correct,poor,১১০১৬৪,labelled
+56,medium,3621846.png,correct,clean,,unreadable
+57,medium,3642243.png,correct,usable,১১০৬৫৭,labelled
+58,medium,3655545.png,correct,clean,১৩১৭৯৬,labelled
+59,medium,3697216.png,correct,poor,১৮৯০৫৬,labelled
+60,medium,3699317.png,correct,clean,৫১২১৩৩,labelled
+61,medium,3711122.png,correct,clean,১১৮২৮২,labelled
+62,medium,3743789.png,correct,clean,১১৬৭৩৩,labelled
+63,medium,3745355.png,partial,poor,৮১০৭৮১,labelled
+64,medium,3766903.png,partial,poor,৩৪৮২৮২,labelled
+65,medium,3771527.png,correct,poor,১১১৫৪১,labelled
+66,medium,3773658.png,correct,usable,১১৭১৬৫,labelled
+67,medium,3776224.png,correct,usable,১১০৬৮৫,labelled
+68,medium,3778935.png,correct,usable,১১১৫৭৩,labelled
+69,medium,3779847.png,correct,usable,৫১২৯৪৫,labelled
+70,medium,3791004.png,correct,clean,০৫০২৮০,labelled
+71,medium,3792726.png,correct,usable,১১১০০২,labelled
+72,medium,3795341.png,correct,clean,০১২১৩৩,labelled
+73,medium,3795494.png,correct,usable,১৮১৩১০,labelled
+74,medium,3810253.png,correct,usable,১২১৯৯৭,labelled
+75,medium,3814027.png,correct,poor,১১০০১৫,labelled
+76,medium,3831216.png,correct,usable,১১১৪৪০,labelled
+77,medium,3831581.png,partial,usable,১৩৫৩৩৪,labelled
+78,medium,3832777.png,correct,usable,১১৩৪৮০,labelled
+79,medium,3838118.png,correct,usable,,unreadable
+80,medium,3838327.png,correct,poor,০২০৮৫৩,labelled
+81,medium,3890623.png,correct,clean,১১৬৬৬৭,labelled
+82,medium,3898734.png,correct,clean,১২৯১০১,labelled
+83,medium,3904785.png,correct,clean,০৫০৬৯৯,labelled
+84,medium,3918003.png,correct,usable,৮১০৩৪২,labelled
+85,medium,3922747.png,partial,clean,১১১০৯৬,labelled
+86,medium,3923905.png,correct,clean,১১০৭৬২,labelled
+87,medium,3924660.png,partial,usable,,no label
+88,medium,3925375.png,correct,usable,,no label
+89,medium,3934405.png,correct,usable,,no label
+90,medium,3936087.png,correct,clean,,no label
+91,medium,3936557.png,correct,usable,,no label
+92,medium,3936781.png,correct,clean,,no label
+93,medium,3940037.png,correct,clean,,no label
+94,medium,3942672.png,correct,clean,,no label
+95,medium,3992272.png,correct,clean,,no label
+96,medium,4099423.png,correct,usable,,no label
+97,medium,4107195.png,correct,clean,,no label
+98,medium,4170388.png,correct,usable,,no label
+99,medium,4173032.png,correct,usable,,no label
+100,medium,4183807.png,correct,usable,,no label
+101,medium,4204610.png,correct,clean,,no label
+102,medium,4287845.png,correct,clean,,no label
+103,medium,4388468.png,correct,usable,,no label
+104,extreme,3610964.png,correct,usable,১১২৭৫৯,labelled
+105,extreme,3612347.png,correct,usable,১২৫৭২৭,labelled
+106,extreme,3612466.png,correct,usable,১১১৯৪৩,labelled
+107,extreme,3614338.png,correct,usable,১১০৫০০,labelled
+108,extreme,3620548.png,correct,usable,২২৪৯৯৩,labelled
+109,extreme,3626299.png,correct,usable,১২৮০৭৩,labelled
+110,extreme,3628621.png,correct,usable,,unreadable
+111,extreme,3639608.png,correct,usable,,unreadable
+112,extreme,3650838.png,correct,poor,,unreadable
+113,extreme,3704406.png,correct,usable,১১৭৪৮৮,labelled
+114,extreme,3706250.png,correct,usable,১৩৬৫২৪,labelled
+115,extreme,3706295.png,correct,poor,৫১১৭৮৭,labelled
+116,extreme,3709797.png,correct,poor,,unreadable
+117,extreme,3722205.png,correct,usable,১১০৯৮৫,labelled
+118,extreme,3732408.png,correct,poor,১১৬৯৯৯,labelled
+119,extreme,3741561.png,correct,clean,১১৪৩৮৯,labelled
+120,extreme,3741675.png,correct,usable,১১০১৭৮,labelled
+121,extreme,3742657.png,correct,poor,১১৫৯৪৭,labelled
+122,extreme,3766657.png,correct,usable,১২৭০৮১,labelled
+123,extreme,3770306.png,correct,clean,০২০৭৩৭,labelled
+124,extreme,3770823.png,correct,clean,১৩৫৩২৫,labelled
+125,extreme,3771245.png,correct,clean,৫১২৪৪৫,labelled
+126,extreme,3773930.png,partial,usable,২২৮৪২০,labelled
+127,extreme,3789192.png,correct,clean,১১০৩৮১,labelled
+128,extreme,3789351.png,correct,usable,১১০৬৮৭,labelled
+129,extreme,3812389.png,partial,usable,১১০৮৮৮,labelled
+130,extreme,3828562.png,correct,usable,১১১১২১,labelled
+131,extreme,3841920.png,correct,usable,,unreadable
+132,extreme,3856220.png,partial,usable,৫১২৯৪৫,labelled
+133,extreme,3868496.png,wrong,poor,,unreadable
+134,extreme,3905286.png,correct,poor,১১০১২৮,labelled
+135,extreme,3910194.png,correct,poor,০৫০৭৩৫,labelled
+136,extreme,3940750.png,correct,usable,,no label
+137,extreme,3941836.png,partial,poor,,no label
+138,extreme,3943547.png,partial,usable,,no label
+139,extreme,3944886.png,correct,usable,,no label
+140,extreme,3957846.png,correct,clean,,no label
+141,extreme,3988692.png,correct,usable,,no label
+142,extreme,3996135.png,correct,poor,,no label
+143,extreme,3996201.png,correct,poor,,no label
+144,extreme,4053751.png,correct,poor,,no label
+145,extreme,4071523.png,correct,poor,,no label
+146,extreme,4145343.png,correct,usable,,no label
+147,extreme,4165423.png,correct,usable,,no label
+148,extreme,4180314.png,correct,usable,,no label
+149,extreme,4193979.png,partial,poor,,no label
+150,extreme,4206148.png,correct,usable,,no label
+151,extreme,4270167.png,correct,usable,,no label
+152,extreme,4287399.png,correct,poor,,no label
+153,extreme,4295646.png,correct,usable,,no label
+154,extreme,4354636.png,correct,poor,,no label
