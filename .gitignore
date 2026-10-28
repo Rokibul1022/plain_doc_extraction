@@ -63,3 +63,9 @@ desktop.ini
 /feature checklist/
 /_archive/
 *.zip
+
+# eval files kept local only
+/eval/contact_sheet.jpg
+/eval/metrics.json
+/eval/new_samples_contact_sheet.jpg
+/eval/new_samples_metrics.json
