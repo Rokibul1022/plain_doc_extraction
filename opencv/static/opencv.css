@@ -1,0 +1,9 @@
+.cv-block { margin-top: 1.25rem; }
+.cv-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; align-items: start; }
+.cv-fig { margin: 0; background: var(--bg-card, #151a23); border: 1px solid var(--border, #2a3140); border-radius: 12px; padding: .6rem; }
+.cv-fig img { width: 100%; height: auto; display: block; border-radius: 8px; }
+.cv-fig figcaption { margin-top: .4rem; font-size: .8rem; opacity: .75; text-align: center; }
+.cv-final img { background: #fff; }
+@media (max-width: 800px) { .cv-row { grid-template-columns: 1fr; } }
+.cv-opt { display: inline-flex; align-items: center; gap: .5rem; margin: .5rem 1rem; font-size: .9rem; cursor: pointer; }
+.cv-opt input { width: 1.1rem; height: 1.1rem; }

@@ -1,0 +1,8 @@
+# Core scan (opencv/scan.py, document.py, ...)
+opencv-python-headless>=4.9.0
+numpy>=1.26.0
+
+# Only for the web API (opencv/api.py) and image loading with EXIF rotation (opencv/imgio.py)
+Pillow>=10.2.0
+fastapi>=0.110.0
+python-multipart>=0.0.9
