@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PlateScan - License Plate Scanner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css?v=4">
+  <link rel="stylesheet" href="/static/plate.css?v=1">
+  <link rel="stylesheet" href="/opencv-static/opencv.css?v=2">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="logo-badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="7" width="20" height="10" rx="2"/><path d="M6 12h2M10 12h2M14 12h4"/>
+        </svg>
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <h1 class="brand-title">PlateScan</h1>
+        <span class="brand-tag">CCTV license plate reader</span>
+      </div>
+    </div>
+    <div class="header-status">
+      <div class="status-badge" title="Learned plate detector (ONNX)"><span class="status-dot inactive" id="detDot"></span><span id="detText">Detector…</span></div>
+      <div class="status-badge" title="Plate text recogniser (ONNX)"><span class="status-dot inactive" id="ocrDot"></span><span id="ocrText">OCR…</span></div>
+      <button class="btn-icon" id="themeBtn" title="Toggle theme">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <nav class="workflow-nav">
+    <div style="display:flex;gap:.75rem;">
+      <button class="step-tab active" id="tabImage"><span class="step-num">1</span><span>Image</span></button>
+      <button class="step-tab" id="tabVideo"><span class="step-num">2</span><span>Video</span></button>
+      <button class="step-tab" id="tabOpencv"><span class="step-num">3</span><span>OpenCV</span></button>
+    </div>
+  </nav>
+
+  <main class="app-main plate-main">
+    <!-- IMAGE MODE -->
+    <section id="imageMode">
+      <div class="dropzone-card plate-drop" id="dropImage">
+        <input type="file" id="fileImage" accept="image/*" multiple style="display:none">
+        <div class="dropzone-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+        <h2 class="dropzone-title">Drop CCTV frames or car photos</h2>
+        <p class="dropzone-desc">Finds every plate, repairs blur, noise and low light, and returns an easily readable plate with its text and an honest reliability score.</p>
+        <button class="btn btn-primary" id="pickImage">Select images</button>
+      </div>
+      <div id="imageResults"></div>
+    </section>
+
+    <!-- VIDEO MODE -->
+    <section id="videoMode" style="display:none">
+      <div class="dropzone-card plate-drop" id="dropVideo">
+        <input type="file" id="fileVideo" accept="video/*,.mkv,.webm" style="display:none">
+        <div class="dropzone-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 10l6-3v10l-6-3"/></svg></div>
+        <h2 class="dropzone-title">Drop a CCTV video clip</h2>
+        <p class="dropzone-desc">Tracks each plate across frames, reads its sharpest frames, votes on the text and fuses frames into one cleaner image.</p>
+        <div class="video-opts">
+          <label>Frames analysed per second
+            <select id="fpsSel" class="select-input"><option value="3">3 (fast)</option><option value="6" selected>6 (balanced)</option><option value="10">10 (thorough)</option></select>
+          </label>
+          <label>Limit to first
+            <select id="secSel" class="select-input"><option value="">whole video</option><option value="20">20 s</option><option value="60">60 s</option><option value="120">120 s</option></select>
+          </label>
+        </div>
+        <button class="btn btn-primary" id="pickVideo">Select video</button>
+      </div>
+      <div id="videoProgress" class="progress-card" style="display:none">
+        <div class="progress-label"><span id="progText">Analysing video…</span><span id="progPct">0%</span></div>
+        <div class="progress-bar"><div id="progFill"></div></div>
+      </div>
+      <div id="videoResults"></div>
+    </section>
+    <!-- OPENCV MODE -->
+    <section id="opencvMode" style="display:none">
+      <div class="dropzone-card plate-drop" id="dropOpencv">
+        <input type="file" id="fileOpencv" accept="image/*" multiple style="display:none">
+        <div class="dropzone-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+        <h2 class="dropzone-title">Drop a plate image (OpenCV only)</h2>
+        <p class="dropzone-desc">Classical scan with no OCR, no model and no training: finds the 4 corners, straightens, denoises, deblurs and returns a clean plain page.</p>
+        <label class="cv-opt" title="For plates stamped in the plate colour (no ink): reads the light and shadow of the raised letters"><input type="checkbox" id="opencvRelief"> Embossed (3D) plate</label>
+        <button class="btn btn-primary" id="pickOpencv">Select images</button>
+      </div>
+      <div id="opencvResults"></div>
+    </section>
+  </main>
+
+  <div id="toastContainer"></div>
+  <script src="/static/plate.js?v=2"></script>
+  <script src="/opencv-static/opencv.js?v=2"></script>
+</body>
+</html>

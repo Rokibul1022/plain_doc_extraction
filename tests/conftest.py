@@ -3,7 +3,7 @@
 import cv2
 import numpy as np
 import pytest
-from docscan.core.geometry import order_points
+from opencv.geometry import order_points
 
 
 def create_synthetic_document(
@@ -23,6 +23,7 @@ def create_synthetic_document(
     Returns:
         Tuple of (photograph_bgr, ground_truth_corners_float32).
     """
+    np.random.seed(1234)  # deterministic texture/noise, so detector tests are not flaky
     bg_h, bg_w = bg_size
     doc_h, doc_w = page_size
 

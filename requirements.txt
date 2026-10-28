@@ -1,15 +1,8 @@
-fastapi>=0.110.0
+# Full web app (run.py): OpenCV scan + OCR route. For one part only, use opencv/requirements.txt or ocr/requirements.txt.
+-r opencv/requirements.txt
+-r ocr/requirements.txt
 uvicorn[standard]>=0.28.0
-python-multipart>=0.0.9
-opencv-python-headless>=4.9.0
-numpy>=1.26.0
-scikit-image>=0.22.0
-Pillow>=10.2.0
-img2pdf>=0.5.1
-pydantic>=2.6.0
+
+# tests
 pytest>=8.0.0
 httpx>=0.27.0
-
-# Optional dependencies (uncomment if needed):
-# pytesseract>=0.3.10
-# pillow-heif>=0.15.0

@@ -1,0 +1,40 @@
+# syntax=docker/dockerfile:1
+# OpenCV-only plate scan service: 4 corners -> straighten -> clean -> plain page.
+# No OCR, no models, no GPU. Only opencv/ is copied in.
+#
+#   docker build -f Dockerfile.opencv -t plate-opencv .
+#   docker run --rm -p 8000:8000 --cpus=2 -e WORKERS=2 plate-opencv
+#   curl -F file=@plate.jpg http://localhost:8000/api/opencv/scan        (GET /health for the health check)
+#
+# CPU tuning: one scan is mostly single-threaded, so throughput comes from WORKERS (processes), not from threads.
+# Set WORKERS to the number of CPUs you give the container (--cpus), leave OPENCV_THREADS=1.
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    # no hidden thread pools: NumPy / BLAS / OpenCV each stay on 1 thread per worker
+    OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 \
+    OPENCV_THREADS=1 \
+    OPENCV_MAX_CONCURRENT=2 \
+    OPENCV_MAX_UPLOAD_MB=25 \
+    WORKERS=2 \
+    PORT=8000
+
+RUN apt-get update && apt-get install -y --no-install-recommends libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --create-home --uid 10001 app
+
+WORKDIR /app
+COPY opencv/requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt "uvicorn[standard]>=0.28"
+
+COPY --chown=app:app opencv ./opencv
+USER app
+
+EXPOSE 8000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD python -c "import os,urllib.request as u; u.urlopen('http://127.0.0.1:%s/health' % os.environ.get('PORT','8000'), timeout=4)"
+
+CMD ["sh", "-c", "exec uvicorn opencv.server:app --host 0.0.0.0 --port ${PORT} --workers ${WORKERS} --no-access-log"]

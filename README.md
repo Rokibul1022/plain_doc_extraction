@@ -1,327 +1,303 @@
-# PlainDoc Extraction (DocScan)
+# Bangladeshi License-Plate Scanner
 
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-green.svg)](https://fastapi.tiangolo.com)
-[![OpenCV](https://img.shields.io/badge/OpenCV-Headless%204.9+-orange.svg)](https://opencv.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![OpenCV](https://img.shields.io/badge/OpenCV-classical%20CV-orange.svg)](https://opencv.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-web%20app-009688.svg)](https://fastapi.tiangolo.com/)
+[![ONNX Runtime](https://img.shields.io/badge/ONNX%20Runtime-CPU-5C2D91.svg)](https://onnxruntime.ai/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A high-performance, offline-first document and text extraction pipeline built with **classical Computer Vision** (OpenCV, NumPy, scikit-image) and **FastAPI**. 
+Turns real-world CCTV frames and car photos of Bangladeshi license plates into **clean, straightened, plain
+black-on-white pages** that are easy to read, with an optional OCR reading on top.
 
-PlainDoc converts mobile camera photos of paper documents, invoices, receipts, certificates, ID cards, tags, and license plates into **flat, straightened, evenly illuminated, CamScanner-grade plain text documents** with pure snow-white paper and crisp, minimal typography.
+The project has two independent routes that share one web app:
 
----
+| Route | Folder | Technology | Needs models / training |
+|---|---|---|---|
+| **OpenCV scan** | [`opencv/`](opencv/README.md) | OpenCV + NumPy only | **No** - classical image processing |
+| **OCR route** | [`ocr/`](ocr/README.md) | YOLO plate detector + Bangla digit reader (ONNX) | Yes (models included) |
 
-## Key Highlights
-
-- **Pure Classical Computer Vision:** Zero bulky neural network weights, zero GPU requirement, instant startup (< 35ms processing time).
-- **Accurate Boundary & Context Cropping:** Multi-tier edge detection and polygon fitting (`approxPolyDP`) that isolates the actual document or card out of complex backgrounds (desks, vehicles, tables).
-- **Perspective Rectification & Auto-Deskewing:** Corrects 3D perspective distortion into a flat top-down rectangle and straightens residual line tilt via Hough transform.
-- **CamScanner-Grade Plain Text Enhancement:** Background division eliminates shadows and color casts, rendering a snow-white background with razor-sharp, minimal text strokes (no bloated or over-bold letters).
-- **Dual Form Factor:**
-  1. **Python Library / Microservice:** Easily importable into other Python backends, workers, and OCR pipelines.
-  2. **Lightweight Web App:** Responsive zero-dependency Vanilla JS/CSS UI with 4-point corner adjustment, 2.5x magnifier loupe, and instant live preview.
-- **Versatile Export:** Multi-page PDF (A4, US Letter, Fit-to-Page), ZIP archives of high-res JPEG/PNG, with optional Tesseract OCR integration for searchable text layers.
-
----
-
-## Visual Benchmark
-
-| Input Photo (Tilted, Angled, Shadows) | PlainDoc Output (Straight, Clean Snow-White) |
-|:---:|:---:|
-| Angled Paper Document / Invoice | Perfectly Rectified, Pure White Sheet, Sharp Plain Text |
-| Vehicle Photo with License Plate | Tight Context Crop, Perspective Straightened, High-Contrast Text |
-| Certificate with Colors & Stamps | Clean Snow-White Paper with Preserved Seal Colors (`Magic Color`) |
-
-Comprehensive evaluation benchmarks are located in [`eval/contact_sheet.jpg`](eval/contact_sheet.jpg) and [`eval/metrics.json`](eval/metrics.json).
-
----
-
-## System Architecture
-
-```mermaid
-flowchart TD
-    subgraph Client ["Client Layer"]
-        UI["Web App (Vanilla HTML5 / CSS3 / ES6)"]
-        CLI["CLI Tool (plate_scan.py)"]
-        AppInt["Third-Party Python App / Service"]
-    end
-
-    subgraph API ["FastAPI REST Service"]
-        EP_Up["POST /api/upload"]
-        EP_Det["POST /api/detect"]
-        EP_Prev["POST /api/preview"]
-        EP_Exp["POST /api/export"]
-    end
-
-    subgraph Pipeline ["DocScan Core CV Pipeline"]
-        direction TB
-        S1["1. Image Ingestion & EXIF Normalization"]
-        S2["2. Multi-Tier Boundary Detection\n(Canny + Contour Area + approxPolyDP)"]
-        S3["3. Homography Perspective Rectification\n(warpPerspective + auto-deskew)"]
-        S4["4. Background Estimation & Division\n(Dilation + Median Blur + Normalization)"]
-        S5["5. Contrast Mapping & Stroke Calibration\n(CamScanner Plain Text / Magic Color)"]
-        S6["6. Multi-Page Document Export\n(PDF / ZIP / Searchable OCR)"]
-
-        S1 --> S2 --> S3 --> S4 --> S5 --> S6
-    end
-
-    UI --> API
-    API --> Pipeline
-    CLI --> Pipeline
-    AppInt --> Pipeline
+```
+ frame / photo
+      │
+      ▼
+ ┌─────────────────┐   ┌──────────────────────────────────────┐   ┌────────────────┐
+ │ 1. YOLO detects │──►│ 2. OpenCV scan                       │──►│ 4. OCR reads   │
+ │    the plate    │   │    corners → straighten → clean      │   │    the plate   │
+ │  ocr/detector   │   │    → plain page   (opencv/)          │   │   (ocr/)       │
+ └─────────────────┘   └──────────────────────────────────────┘   └────────────────┘
 ```
 
-### Architectural Deep-Dive
-
-1. **Detection Tier (`docscan/core/detect.py`)**:
-   - **Paper Document Quad:** Edge-based hysteresis (`auto_canny`) with morphological closing and convex 4-point contour approximation. Evaluates boundary support score across edge normals.
-   - **Focused Context Quad:** For license plates, cards, and labels against complex backgrounds, multi-threshold search scores candidate boxes using horizontal text energy (Sobel gradient), aspect ratio constraints (1.2–5.0), and center proximity.
-   - **Polygonal Perspective Fitting (`approxPolyDP`):** Instead of bounding boxes that introduce extra margins, true perspective corner coordinates are computed.
-
-2. **Geometric Normalization (`docscan/core/geometry.py`)**:
-   - **Corner Ordering:** Robust sorting of arbitrary 4-point arrays into clockwise `[Top-Left, Top-Right, Bottom-Right, Bottom-Left]`.
-   - **Perspective Warp:** Homography transformation rectifies trapezoidal document planes into 90-degree orthogonal rectangles.
-   - **Auto-Deskewing:** Probabilistic Hough line transform identifies the median angle of horizontal text baselines and applies affine counter-rotation ($|\theta| \le 12^\circ$).
-
-3. **Illumination & Binarization (`docscan/core/binarize.py`, `docscan/core/illumination.py`)**:
-   - **Background Division:** Dynamic structuring element blur estimates background illumination:
-     $$\text{Normalized} = \frac{\text{Image}}{\text{Background}} \times 255$$
-   - **Calibrated Contrast Mapping:** High-contrast tone mapping sets paper background to 255 (snow white) while keeping ink lines deep black without over-bolding.
-   - **Dark Background Inversion:** Automatically detects dark-background plates/cards and inverts them so they render cleanly as black text on white paper.
-   - **Stroke Weight Tuning:** Morphological erosion/dilation offset allows adjusting stroke weight from ultra-thin/minimal to standard and bold.
+The two routes are usable on their own: the OpenCV scan works on any plate image (full frame or tight crop) without
+any model, and the OCR route can run without the plain-page step.
 
 ---
 
-## Using in Other Applications (Python Library)
+## Contents
 
-You can directly embed PlainDoc's core modules into your own scripts, backends, or Celery/FastAPI workers.
-
-### 1. End-to-End Clean Document Extraction
-
-```python
-import cv2
-from docscan.core.detect import detect_document
-from docscan.core.pipeline import process
-from docscan.schemas import ProcessParams
-
-# 1. Read input image (BGR)
-image = cv2.imread("my_document_photo.jpg")
-
-# 2. Automatically detect 4 corners of document
-corners, confidence, detected = detect_document(image)
-
-# 3. Configure processing parameters
-params = ProcessParams(
-    mode="plain_text",       # 'plain_text', 'magic_color', 'grayscale', 'original'
-    stroke_weight=0.0,       # -1.0 (ultra-thin/minimal) to +1.0 (bold)
-    deskew=True,             # Auto-straighten residual tilt
-)
-
-# 4. Run pipeline
-result = process(image, corners, params)
-
-# 5. Save clean, flat scanner result
-cv2.imwrite("cleaned_document.png", result.image)
-```
-
-### 2. Standalone Perspective Crop & Straighten
-
-```python
-import cv2
-from docscan.core.detect import detect_document
-from docscan.core.geometry import warp, deskew
-
-image = cv2.imread("receipt.jpg")
-corners, _, _ = detect_document(image)
-
-# Rectify into top-down perspective rectangle
-rectified = warp(image, corners)
-
-# Auto-straighten text lines
-straightened = deskew(rectified)
-
-cv2.imwrite("rectified_receipt.png", straightened)
-```
-
-### 3. CamScanner Plain Text Cleaning on Any Cropped Image
-
-```python
-import cv2
-from docscan.core.binarize import camscanner_clean_plain_text
-
-# Provide any cropped document or license plate image
-warped = cv2.imread("cropped_plate.png")
-
-# Converts to pure snow-white background with clean black text
-cleaned = camscanner_clean_plain_text(warped, stroke_weight=-0.2)
-
-cv2.imwrite("plain_text_plate.png", cleaned)
-```
+- [Features](#features)
+- [Quick start](#quick-start)
+- [Repository layout](#repository-layout)
+- [The OpenCV scan](#the-opencv-scan-opencv)
+- [The OCR route](#the-ocr-route-ocr)
+- [Web app and HTTP API](#web-app-and-http-api)
+- [Docker and production](#docker-and-production)
+- [Configuration reference](#configuration-reference)
+- [Testing](#testing)
+- [Evaluation and limitations](#evaluation-and-limitations)
+- [Data and privacy](#data-and-privacy)
+- [Third-party components](#third-party-components)
+- [License](#license)
 
 ---
 
-## Installation & Running the Web App
+## Features
 
-### 1. Requirements
-- Python 3.10+ (tested up to Python 3.12)
-- Windows, macOS, or Linux
+**OpenCV scan** (`opencv/`, no OCR, no neural network, no training)
+- Plate **corner detection** from colour clustering, seeded region growing and edge-verified line fitting, with a
+  character-containment check; Canny + contour search for wide shots. Deterministic: the same image always gives
+  the same corners.
+- **Perspective correction** to the plate's true aspect ratio, sub-pixel corner refinement.
+- **Restoration**: low-light lift, glare removal, de-blocking, non-local-means denoising, upscaling, contrast stretch.
+- **Plain page generation**: colour projection that separates ink from plate body (works on teal-on-teal plates),
+  illumination flattening, Wiener **deblurring** from a blur estimate measured on the strokes, hysteresis
+  thresholding, frame / bolt / rule removal, per-row deskew and de-slant, smooth stroke rebuild.
+- **Dedicated top-row processing** for the small Bangla city / series-letter row (re-extraction, thinning to print
+  weight, counter re-opening, gap bridging).
+- **3D relief mode** for embossed plates stamped in the plate colour (no ink): reads the light and shadow of the
+  raised characters and draws them as clear outlines.
 
-### 2. Setup
+**OCR route** (`ocr/`)
+- YOLO-v9 plate detector (ONNX) with tiling for small plates in large frames.
+- Bangla number-row reader (CRNN + CTC) and top-row classifier, Latin plate OCR, calibrated reliability verdict
+  (`readable` / `uncertain` / `unreadable`).
+- OCR-guided deblurring, video tracking with multi-frame voting and fusion.
+
+**Web app and operations**
+- One-page UI with **Image**, **Video** and **OpenCV** tabs (including an *Embossed (3D) plate* switch).
+- Stand-alone CPU services and Docker images for each route, with thread / worker settings for predictable CPU use.
+
+---
+
+## Quick start
 
 ```bash
-# Clone the repository
 git clone https://github.com/Rokibul1022/plain_doc_extraction.git
 cd plain_doc_extraction
-
-# Create and activate virtual environment
-python -m venv .venv
-
-# On Windows:
-.venv\Scripts\activate
-# On macOS / Linux:
-source .venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
+python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
+pip install -r requirements.txt                        # everything; or opencv/requirements.txt for the scan only
 ```
 
-### 3. Start the Web App
+**Web app**
 
 ```bash
-python run.py
+python run.py                    # opens http://127.0.0.1:8000
 ```
-The server will start at **http://127.0.0.1:8000** and automatically open your default browser.
 
-To run on a specific port or host without opening the browser:
+**OpenCV scan from Python**
+
+```python
+import cv2
+from opencv import scan
+
+result = scan(cv2.imread("plate.jpg"))      # relief="force" for embossed plates without ink
+cv2.imwrite("plain.png", result.document)   # uint8, white paper, black characters, 960 px wide
+print(result.corners, result.method)        # (4, 2) corners in the input image, how they were found
+```
+
+**OpenCV scan from the command line**
+
 ```bash
-python run.py --host 0.0.0.0 --port 8080 --no-browser
+python -m opencv.cli plate.jpg --out out/                  # writes *_corners.jpg, *_straight.png, *_plain.png
+python -m opencv.cli ./plates --out out/ --relief force
 ```
 
 ---
 
-## CLI Standalone Usage
+## Repository layout
 
-For fast batch processing or terminal-only environments without running the web server:
-
-```bash
-# Clean a single plate or document
-python plate_scan.py samples/images.jpeg
-
-# Clean and run OCR text recognition (requires tesseract)
-python plate_scan.py samples/images.jpeg --ocr
 ```
-Outputs will be saved in `./output/` with individual steps:
-- `<name>_1_corners.jpg` (Detected quadrilateral on raw photo)
-- `<name>_2_warped.jpg` (Perspective-rectified top-down image)
-- `<name>_3_clean.png` (Denoised, contrast-enhanced image)
-- `<name>_4_scan.png` (Final CamScanner plain text image)
-
----
-
-## REST API Reference
-
-When the server is running (`python run.py`), the following REST endpoints are available:
-
-| Endpoint | Method | Description |
-|:---|:---:|:---|
-| `/api/upload` | `POST` | Upload photo (multipart/form-data), returns `image_id` and dimensions |
-| `/api/detect` | `POST` | Automatically detects document/plate corners on uploaded session image |
-| `/api/preview` | `POST` | Generates real-time warped and enhanced preview for UI |
-| `/api/export` | `POST` | Generates multi-page PDF, PNG/JPEG ZIP, or OCR searchable PDF |
-| `/api/health` | `GET` | Health status and system capabilities (Tesseract OCR, HEIF support) |
-
-Interactive Swagger documentation is available at **http://127.0.0.1:8000/docs**.
-
----
-
-## Cross-Platform Deployment
-
-### Running with Docker
-
-Create a `Dockerfile`:
-```dockerfile
-FROM python:3.11-slim
-WORKDIR /app
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgl1-mesa-glx \
-    libglib2.0-0 \
-    && rm -rf /var/lib/apt/lists/*
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-EXPOSE 8000
-CMD ["python", "run.py", "--host", "0.0.0.0", "--port", "8000", "--no-browser"]
-```
-
-Build and run:
-```bash
-docker build -t plain-doc-extraction .
-docker run -p 8000:8000 plain-doc-extraction
+.
+├── opencv/                  OpenCV-only plate scan (self-contained, own README / requirements / tests / CLI)
+│   ├── scan.py                entry point: scan(img) -> corners, straightened plate, plain page
+│   ├── quadfit.py             edge-verified plate quad, seeded region growing, border-line fitting
+│   ├── plate_find.py          colour-cluster hull, sub-pixel corners, rectification, letterbox trim
+│   ├── document.py            plain-page generation          cleanpage.py   deblur / threshold helpers
+│   ├── toprow.py              small Bangla top-row clean-up   relief.py      3D relief reading
+│   ├── restore.py layout.py readable.py quality.py strokes.py geometry.py detect.py imgio.py
+│   ├── api.py server.py cli.py static/   HTTP route, stand-alone service, CLI, UI tab assets
+│   ├── scripts/               folder scans with contact sheets
+│   └── tests/
+├── ocr/                     YOLO + OCR route (ONNX models, fonts, training / evaluation scripts, README)
+├── app/                     web app: server.py + static UI (plate.html, plate.js, plate.css)
+├── tests/                   app and OCR-route tests
+├── run.py                   starts the web app
+├── Dockerfile.opencv        OpenCV-only service image
+├── Dockerfile.ocr           YOLO + OCR service image
+├── Dockerfile               whole web app in one image
+└── requirements.txt         dependencies for the full app
 ```
 
 ---
 
-## Running Automated Tests
+## The OpenCV scan (`opencv/`)
 
-Run the complete test suite with `pytest`:
-```bash
-pytest
 ```
-All 27 unit and integration tests validate:
-- Corner sorting and perspective warp homography
-- Canny edge hysteresis and adaptive thresholding
-- Background removal and illumination normalization
-- Session storage expiration and cleanup
-- End-to-end FastAPI endpoint contracts
+photo ──► trim ──► find 4 corners ──► straighten ──► restore ──► plain page
+```
 
-To re-run the benchmark accuracy evaluation across ground-truth samples:
+| Stage | Module | Method |
+|---|---|---|
+| Trim | `plate_find.trim_letterbox` | cut pure-black padding bars |
+| Find the plate | `scan.find_corners`, `quadfit.py`, `plate_find.py`, `detect.py` | k-means colour clusters and seeded region growing give candidate boxes; each is scored by whether its four sides lie on a real colour step along their whole length; the four border lines are then fitted under plate-shape constraints; a text-containment check keeps the quad that holds the characters. Wide shots: Canny + contour search |
+| Straighten | `plate_find.rectify` | homography to the true aspect ratio (estimated from the quad, snapped to common plate shapes) |
+| Restore | `restore.py` | low-light gamma / CLAHE, glare inpainting, bilateral de-blocking, non-local-means denoise, bicubic upscale, contrast stretch, unsharp mask |
+| Plain page | `document.py`, `cleanpage.py` | Fisher colour projection with a coherence self-check, illumination flattening, blur estimation + Wiener deconvolution, black-hat stroke mask, hysteresis threshold, connected-component and morphological clean-up, frame / bolt / rule removal, row detection with per-row deskew and de-slant, stroke evening, smooth contour rebuild |
+| Top row | `toprow.py` | per-row deblur + threshold (Sauvola and Otsu candidates, the one with fewest broken strokes wins), thinning to print weight, centre-line-safe lump removal, gap bridging guided by the grey image |
+| Embossed plates | `relief.py` | see below |
+
+### Embossed ("3D") plates
+
+Some plates are stamped in the plate colour: there is no ink to threshold, the characters only exist as light and
+shadow. `relief.py` reads that relief: it flattens the lighting, measures the edge strength at stroke scale, masks the
+mounting bolts and long rim lines, and stretches the contrast so each raised character appears as a crisp dark
+**outline** on white. Switch it on with `relief="force"`, the CLI flag `--relief force`, or the *Embossed (3D) plate*
+checkbox in the UI. `relief="auto"` only switches when the normal ink map is almost empty.
+
+More detail, module reference and the Python API: [`opencv/README.md`](opencv/README.md).
+
+---
+
+## The OCR route (`ocr/`)
+
+| Component | File | Notes |
+|---|---|---|
+| Plate detector | `detector.py` | YOLO-v9 (ONNX, via `open-image-models`), tiling for small plates, classical fallback |
+| Bangla number row | `bangla_reader.py`, `bangla_row.onnx` | CRNN + CTC over the six digits |
+| Top row | `bangla_top.py`, `bangla_top.onnx` | city / series-letter classifier |
+| Latin plate OCR | `ocr.py` | `fast-plate-ocr` with multi-variant voting |
+| Reliability | `verdict.py`, `verdict_bn.py` | calibrated score → `readable` / `uncertain` / `unreadable` |
+| Deblur / video | `deblur.py`, `video.py` | OCR-guided deblur; tracking, frame voting and fusion |
+| Typeset page | `typeset.py`, `textrender.py`, `fonts/` | clean typed page for reliable readings (HarfBuzz) |
+| Training / evaluation | `scripts/` | GPU training, cross-validation grouped by plate number, calibration, labelling page |
+
+Details: [`ocr/README.md`](ocr/README.md).
+
+---
+
+## Web app and HTTP API
+
+`python run.py` serves the UI at `http://127.0.0.1:8000` (`--port`, `--host`, `--no-browser` are available).
+Interactive API docs are at `/docs`.
+
+| Method and path | Purpose |
+|---|---|
+| `POST /api/opencv/scan` | OpenCV scan. Form fields: `file`, `relief` = `auto` \| `force` \| `off`. Returns `corners`, `method`, `original` (corners drawn), `rectified`, `restored`, `document` (data-URI images), `width`, `height`, `elapsed_s` |
+| `POST /api/plate/scan` | YOLO + OCR on an image. Returns `plates[]` with `detection`, `quality`, `reading`, `verdict`, `document_kind`, `timings_ms` and result image URLs |
+| `POST /api/plate/video` | start a video job (`fps`, `max_seconds`); returns `job_id` |
+| `GET /api/plate/job/{id}` | job status / progress / result |
+| `GET /api/plate/asset/{scan_id}/{name}` | result images |
+| `GET /api/plate/capabilities` | whether the detector and OCR models loaded |
+| `GET /api/health` | liveness |
+
 ```bash
-python scripts/evaluate.py
+curl -F file=@plate.jpg -F relief=auto http://localhost:8000/api/opencv/scan
+curl -F file=@car.jpg http://localhost:8000/api/plate/scan
 ```
 
 ---
 
-## Project Structure
+## Docker and production
 
+Everything runs on **CPU**; no GPU is needed or used by the OpenCV scan (`opencv-python-headless`).
+
+```bash
+# OpenCV-only service (no models)
+docker build -f Dockerfile.opencv -t plate-opencv .
+docker run --rm -p 8000:8000 --cpus=2 -e WORKERS=2 plate-opencv
+
+# YOLO + OCR service (models are downloaded while the image is built)
+docker build -f Dockerfile.ocr -t plate-ocr .
+docker run --rm -p 8001:8001 --cpus=4 -e WORKERS=2 -e ORT_INTRA_THREADS=2 plate-ocr
+
+# whole web app
+docker build -t plate-app . && docker run --rm -p 8000:8000 plate-app
 ```
-plain_doc_extraction/
-├── docscan/
-│   ├── config.py             # Settings, paths, and environment defaults
-│   ├── schemas.py            # Pydantic schemas and request models
-│   ├── server.py             # FastAPI routes, middleware, static mounting
-│   ├── storage.py            # Temporary session storage with TTL eviction
-│   ├── core/
-│   │   ├── binarize.py       # Plain text background division & stroke calibration
-│   │   ├── denoise.py        # Bilateral, Median, and Non-Local Means filters
-│   │   ├── detect.py         # Multi-tier document & context quadrilateral detector
-│   │   ├── geometry.py       # Corner ordering, perspective warp, auto-deskew
-│   │   ├── illumination.py   # Background estimation & CLAHE normalization
-│   │   ├── io_utils.py       # EXIF orientation fix, encoding/decoding
-│   │   ├── modes.py          # Auto-classification of document presets
-│   │   └── sharpen.py        # Blur-adaptive unsharp masking
-│   ├── export/
-│   │   ├── images.py         # ZIP archive builder & image encoding
-│   │   ├── ocr.py            # Tesseract OCR detection & text extraction
-│   │   └── pdf.py            # Multi-page PDF generator with fallback
-│   └── static/
-│       ├── app.js            # Vanilla ES6 application logic & canvas handler
-│       ├── index.html        # Responsive web app UI
-│       └── styles.css        # Modern dark/light glassmorphic styling
-├── eval/
-│   ├── contact_sheet.jpg     # Visual before/after benchmark results
-│   └── metrics.json          # Numerical accuracy & timing metrics
-├── samples/                  # Benchmark test images & ground truth JSON
-├── scripts/
-│   └── evaluate.py           # Evaluation benchmark runner
-├── tests/                    # Pytest test suite (27 tests)
-├── plate_scan.py             # Standalone CLI tool for plates & cards
-├── requirements.txt          # Minimal Python dependencies
-├── run.py                    # Server launcher
-└── README.md
+
+Without Docker: `uvicorn opencv.server:app --workers 4`, `uvicorn ocr.server:app --workers 2`.
+
+**CPU sizing.** One scan is mostly single-threaded, so throughput comes from worker *processes*: set `WORKERS` to the
+CPUs you give the container and keep each worker to one thread (the images do this by default). For the OCR image the
+thread budget is about `WORKERS × ORT_INTRA_THREADS`. The scan is deterministic, so results can be cached by image hash.
+A typical production pipeline is *YOLO service → crop → OpenCV service (display / storage) → OCR on the straightened
+colour crop*. OCR reads the restored colour plate better than the black-and-white page; use the plain page for display.
+
+---
+
+## Configuration reference
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `WORKERS` | `2` | uvicorn worker processes (Docker images) |
+| `PORT` | `8000` / `8001` | listen port (Docker images) |
+| `OPENCV_THREADS` | `1` | threads OpenCV may use inside one scan |
+| `OPENCV_MAX_CONCURRENT` | `2` | scans running at once per worker (OpenCV service) |
+| `OPENCV_MAX_UPLOAD_MB` | `25` | upload limit, OpenCV service |
+| `OPENCV_MAX_IMAGE_DIM` | `4000` | longest image side kept, OpenCV service |
+| `ORT_INTRA_THREADS` / `ORT_INTER_THREADS` | `0` (ONNX default) | ONNX Runtime threads per model session |
+| `OCR_MAX_UPLOAD_MB` | `25` | upload limit, OCR service |
+
+---
+
+## Testing
+
+```bash
+python -m pytest tests opencv/tests        # app, OCR route and standalone OpenCV tests
 ```
+
+Some OCR-route tests are skipped when their sample photos are not present locally (see [Data and privacy](#data-and-privacy)).
+The OpenCV tests use synthetic plates and need no data. The scan is deterministic, which the tests assert.
+
+---
+
+## Evaluation and limitations
+
+- The OpenCV scan was developed and checked on three local tier sets (easy / medium / extreme CCTV plates), a
+  200-plate set and a small set of embossed no-ink plates. Results were **judged by eye** per image, using two
+  measures: *corners correct* and *usable output*, and compared against saved contact sheets; no automatic accuracy
+  number is claimed for the current version.
+- Output quality is limited by the photo. If blur, glare or compression destroyed the strokes, no classical step can
+  restore them: very small or very blurry plates stay rough, mostly in the small top row.
+- Embossed plates come out as outlines, not solid text; shallow or paint-worn relief gives partial results.
+- Settings were tuned on the sets above; other cameras and plate styles may need adjustment. The relief mode was tuned
+  on four plates.
+- The OCR route's digit reader was trained on a small set of hand-verified labels; treat its reading as a
+  suggestion unless the verdict says `readable`.
+
+---
+
+## Data and privacy
+
+The photos used for development show real vehicles and their plate numbers, and some come from third-party sources.
+They, their labels and the generated result sheets are **not part of this repository**. The scripts take any folder of
+images, for example `python opencv/scripts/scan_plain.py <folder with easy/medium/extreme sub-folders> --out results/`.
+If you publish results, make sure you have the right to share the images.
+
+---
+
+## Third-party components
+
+| Component | Use | License |
+|---|---|---|
+| [OpenCV](https://opencv.org/), [NumPy](https://numpy.org/) | the whole OpenCV scan | Apache-2.0 / BSD |
+| [FastAPI](https://fastapi.tiangolo.com/), [Uvicorn](https://www.uvicorn.org/) | web app and services | MIT / BSD |
+| [ONNX Runtime](https://onnxruntime.ai/) | model inference | MIT |
+| [open-image-models](https://github.com/ankandrew/open-image-models) | YOLO-v9 plate detector | MIT |
+| [fast-plate-ocr](https://github.com/ankandrew/fast-plate-ocr) | Latin plate OCR | MIT |
+| [HarfBuzz (uharfbuzz)](https://github.com/harfbuzz/uharfbuzz), [fontTools](https://github.com/fonttools/fonttools) | Bengali text shaping | MIT |
+| Noto Sans Bengali and the other fonts in `ocr/fonts/` | typeset pages | SIL OFL 1.1 (license texts alongside the fonts) |
 
 ---
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+[MIT](LICENSE)

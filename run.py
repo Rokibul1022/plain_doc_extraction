@@ -1,4 +1,4 @@
-"""DocScan entry point: launches the FastAPI server and opens the browser."""
+"""Plate scanner entry point: launches the FastAPI server and opens the browser."""
 
 import argparse
 import logging
@@ -13,7 +13,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
-logger = logging.getLogger("docscan.runner")
+logger = logging.getLogger("app.runner")
 
 
 def is_port_in_use(host: str, port: int) -> bool:
@@ -32,9 +32,9 @@ def _open_browser_delayed(url: str, delay_seconds: float = 1.0) -> None:
 
 
 def main() -> None:
-    """Parse CLI options, check port availability, and start DocScan."""
+    """Parse CLI options, check port availability, and start the plate scanner."""
     parser = argparse.ArgumentParser(
-        description="DocScan: CamScanner-style classical document scanner web app"
+        description="Plate scanner web app (OpenCV scan + OCR)"
     )
     parser.add_argument(
         "--host",
@@ -66,7 +66,7 @@ def main() -> None:
         sys.exit(1)
 
     url = f"http://{args.host}:{args.port}"
-    logger.info(f"Starting DocScan server at {url} ...")
+    logger.info(f"Starting plate scanner at {url} ...")
 
     if not args.no_browser:
         threading.Thread(
@@ -75,7 +75,7 @@ def main() -> None:
 
     try:
         uvicorn.run(
-            "docscan.server:app",
+            "app.server:app",
             host=args.host,
             port=args.port,
             log_level="info",

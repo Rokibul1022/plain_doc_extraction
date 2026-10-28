@@ -1,0 +1,50 @@
+# syntax=docker/dockerfile:1
+# YOLO plate detector + plate OCR service (CPU). The ONNX models are downloaded at BUILD time, so a running
+# container needs no internet. Copies ocr/ plus opencv/ (the shared corner / restore helpers the OCR route imports).
+#
+#   docker build -f Dockerfile.ocr -t plate-ocr .
+#   docker run --rm -p 8001:8001 --cpus=4 -e WORKERS=2 -e ORT_INTRA_THREADS=2 plate-ocr
+#   curl -F file=@car.jpg http://localhost:8001/api/plate/scan          (GET /health, GET /api/plate/capabilities)
+#
+# CPU tuning: total threads ~= WORKERS x ORT_INTRA_THREADS; keep that at or below the CPUs you give the container.
+# For a GPU later: use an nvidia/cuda base image and install onnxruntime-gpu instead of onnxruntime (and
+# the model loaders in ocr/detector.py and ocr/ocr.py also have to select CUDAExecutionProvider / device="cuda").
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 \
+    OPENCV_THREADS=1 \
+    ORT_INTRA_THREADS=2 ORT_INTER_THREADS=1 \
+    OCR_MAX_UPLOAD_MB=25 \
+    WORKERS=2 \
+    PORT=8001 \
+    HOME=/home/app
+
+RUN apt-get update && apt-get install -y --no-install-recommends libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --create-home --uid 10001 app
+
+WORKDIR /app
+COPY ocr/requirements.txt /tmp/requirements.txt
+COPY opencv/requirements.txt /tmp/opencv-requirements.txt
+RUN sed -i 's#^-r ../opencv/requirements.txt#-r /tmp/opencv-requirements.txt#' /tmp/requirements.txt \
+    && pip install -r /tmp/requirements.txt "uvicorn[standard]>=0.28"
+
+COPY --chown=app:app opencv ./opencv
+COPY --chown=app:app ocr ./ocr
+USER app
+
+# bake the models into the image (cached under /home/app/.cache): YOLO plate detector + plate OCR
+RUN python -c "\
+from open_image_models import create_detector; create_detector('yolo-v9-t-640-license-plate-end2end', providers=['CPUExecutionProvider']); \
+from fast_plate_ocr import LicensePlateRecognizer; LicensePlateRecognizer('cct-xs-v1-global-model', device='cpu')" \
+    && find /home/app/.cache -type f | head -5
+
+EXPOSE 8001
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD python -c "import os,urllib.request as u; u.urlopen('http://127.0.0.1:%s/health' % os.environ.get('PORT','8001'), timeout=8)"
+
+CMD ["sh", "-c", "exec uvicorn ocr.server:app --host 0.0.0.0 --port ${PORT} --workers ${WORKERS} --no-access-log"]

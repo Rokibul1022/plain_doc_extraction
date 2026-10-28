@@ -1,11 +1,12 @@
-.venv
-venv
-__pycache__
-*.pyc
-.pytest_cache
-.coverage
-temp_uploads
-.git
-.gitignore
-eval/
-tests/
+# allow-list: only code goes into the image build context (data, results, tests and the venv stay out)
+*
+!opencv
+!ocr
+!app
+!run.py
+!requirements.txt
+**/__pycache__
+**/*.pyc
+opencv/tests
+opencv/scripts
+ocr/scripts
