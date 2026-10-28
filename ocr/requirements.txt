@@ -1,0 +1,12 @@
+-r ../opencv/requirements.txt
+
+# inference
+onnxruntime>=1.17
+open-image-models        # YOLO plate detector
+fast-plate-ocr           # Latin plate OCR
+uharfbuzz                # shape Bengali text for the typeset page
+fonttools
+
+# training / calibration scripts only
+# torch (CUDA build for GPU training)
+# pytesseract

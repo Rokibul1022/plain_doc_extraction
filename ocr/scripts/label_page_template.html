@@ -1,0 +1,81 @@
+<!DOCTYPE html><html lang="bn"><head><meta charset="utf-8"><title>Plate labelling</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{--bg:#0f1117;--card:#161a23;--line:#2a3140;--fg:#e8edf6;--mut:#8b96ab;--acc:#3b82f6;--ok:#10b981;--warn:#f59e0b}
+@media (prefers-color-scheme:light){:root{--bg:#f4f6fa;--card:#fff;--line:#d9dfea;--fg:#0f172a;--mut:#5b667a}}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;background:var(--bg);color:var(--fg);font:15px system-ui,"Nirmala UI","Noto Sans Bengali",sans-serif;display:flex;flex-direction:column}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:.6rem 1rem;display:flex;gap:.8rem;align-items:center;flex-wrap:wrap}
+header b{font-size:1.05rem}.bar{flex:1;min-width:120px;height:8px;background:var(--line);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ok);width:0;transition:width .2s}
+button{font:inherit;background:var(--acc);color:#fff;border:0;border-radius:8px;padding:.5rem 1rem;cursor:pointer}button.sec{background:transparent;color:var(--fg);border:1px solid var(--line)}button.warn{background:var(--warn);color:#111}button:disabled{opacity:.4;cursor:default}
+main{flex:1;max-width:980px;width:100%;margin:0 auto;padding:.8rem 1rem;display:flex;flex-direction:column;gap:.7rem;min-height:0}
+.stage{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.7rem;display:flex;flex-direction:column;gap:.5rem;align-items:center}
+.stage img{max-width:100%;border-radius:8px;background:#000;display:block}
+#full{max-height:34vh;object-fit:contain}#zoom{max-height:30vh;object-fit:contain;width:auto}
+.meta{color:var(--mut);font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap;width:100%;justify-content:space-between}
+.entry{display:flex;flex-direction:column;gap:.5rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.7rem}
+input[type=text]{width:100%;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:.5rem .6rem;font:inherit}
+input.digits{font-size:2rem;letter-spacing:.2em;font-weight:700;text-align:center}
+input.digits:focus{outline:2px solid var(--acc)}
+.dots{display:flex;gap:.4rem;justify-content:center}.dots i{width:1.4rem;height:6px;border-radius:4px;background:var(--line)}.dots i.on{background:var(--ok)}
+.row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}.row .grow{flex:1}
+.hint{font-size:.78rem;color:var(--mut)}kbd{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:0 .35rem;font-size:.75rem}
+.done-badge{color:var(--ok);font-weight:600}.skip-badge{color:var(--warn);font-weight:600}
+</style></head><body>
+<header><b>Plate labelling</b><span id="count"></span><div class="bar"><i id="bar"></i></div>
+<button class="sec" id="dl">Download labels.csv</button></header>
+<main>
+ <div class="stage"><div class="meta"><span id="title"></span><span id="state"></span></div>
+  <img id="full" alt="plate"><img id="zoom" alt="digit row zoom"></div>
+ <div class="entry">
+  <input class="digits" id="digits" type="text" inputmode="numeric" autocomplete="off" autofocus placeholder="six digits">
+  <div class="dots" id="dots"></div>
+  <div class="row"><button class="sec" id="prev">&larr; Back</button><button class="warn" id="skip">Can't read (skip)</button>
+   <span class="grow"></span><button id="next">Next &rarr;</button></div>
+  <div class="row"><input type="text" id="city" list="cities" placeholder="city/district (optional)" class="grow"><input type="text" id="letter" maxlength="3" placeholder="letter (optional)" style="width:9rem"></div>
+  <datalist id="cities"></datalist>
+  <div class="hint">Type six digits (Bengali or 0-9). It <b>saves and jumps to the next unlabelled plate automatically</b>, so there is no scrolling. <kbd>Enter</kbd> next &middot; <kbd>Esc</kbd> can't read &middot; <kbd>&larr;</kbd>/<kbd>&rarr;</kbd> (with the box empty) move around. The model's guess is hidden on purpose.</div>
+ </div>
+</main>
+<script>
+const DATA=__DATA__, CITIES=__CITIES__, KEY="plate-labels-v1", POS="plate-labels-pos";
+const BN="০১২৩৪৫৬৭৮৯";
+let S={};try{S=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
+const norm=s=>[...s].map(c=>{const i=BN.indexOf(c);return i>=0?String(i):(/[0-9]/.test(c)?c:"")}).join("").slice(0,6);
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=id=>document.getElementById(id);
+const isDone=f=>{const s=S[f]||{};return (s.digits&&s.digits.length===6)||s.unreadable};
+let idx=0;
+try{idx=Math.min(DATA.length-1,Math.max(0,parseInt(localStorage.getItem(POS)||"0")||0))}catch(e){}
+$("cities").innerHTML=CITIES.map(c=>"<option value=\""+c+"\">").join("");
+function counts(){let d=0;DATA.forEach(x=>{if(isDone(x.file))d++});$("count").textContent=d+" / "+DATA.length+" done";$("bar").style.width=(100*d/DATA.length)+"%"}
+function dots(n){$("dots").innerHTML=Array.from({length:6},(_,i)=>"<i class=\""+(i<n?"on":"")+"\"></i>").join("")}
+function show(i){
+  idx=Math.max(0,Math.min(DATA.length-1,i));try{localStorage.setItem(POS,String(idx))}catch(e){}
+  const d=DATA[idx],s=S[d.file]||{};
+  $("full").src=d.full;$("zoom").src=d.zoom;$("title").textContent="#"+idx+" · "+d.file;
+  $("state").innerHTML=s.unreadable?"<span class=\"skip-badge\">marked: can't read</span>":(s.digits&&s.digits.length===6)?"<span class=\"done-badge\">saved ✓</span>":"";
+  $("digits").value=s.digits||"";$("city").value=s.city||"";$("letter").value=s.letter||"";dots((s.digits||"").length);
+  $("prev").disabled=idx===0;$("next").disabled=idx===DATA.length-1;counts();$("digits").focus();$("digits").select();
+}
+function nextTodo(from){for(let k=1;k<=DATA.length;k++){const j=(from+k)%DATA.length;if(!isDone(DATA[j].file))return j}return Math.min(from+1,DATA.length-1)}
+function rec(){return S[DATA[idx].file]=S[DATA[idx].file]||{}}
+$("digits").addEventListener("input",e=>{const v=norm(e.target.value);e.target.value=v;const s=rec();s.digits=v;if(v.length===6)s.unreadable=false;dots(v.length);save();counts();
+  if(v.length===6){setTimeout(()=>show(nextTodo(idx)),120)}});
+$("city").addEventListener("input",e=>{rec().city=e.target.value;save()});
+$("letter").addEventListener("input",e=>{rec().letter=e.target.value;save()});
+function skip(){const s=rec();s.unreadable=true;s.digits="";save();show(nextTodo(idx))}
+$("skip").onclick=skip;$("prev").onclick=()=>show(idx-1);$("next").onclick=()=>show(nextTodo(idx));
+document.addEventListener("keydown",e=>{
+  if(e.key==="Enter"){e.preventDefault();show(nextTodo(idx))}
+  else if(e.key==="Escape"){e.preventDefault();skip()}
+  else if(e.key==="ArrowLeft"&&!$("digits").value&&document.activeElement===$("digits")){show(idx-1)}
+  else if(e.key==="ArrowRight"&&!$("digits").value&&document.activeElement===$("digits")){show(idx+1)}});
+$("dl").onclick=()=>{
+  const rows=["file,digits,city,letter,status"];
+  DATA.forEach(d=>{const s=S[d.file]||{};const st=s.unreadable?"unreadable":(s.digits&&s.digits.length===6)?"labelled":"todo";
+    if(st==="todo")return;const bn=(s.digits||"").split("").map(x=>BN[+x]).join("");
+    rows.push([d.file,s.unreadable?"":bn,s.city||"",s.letter||"",st].map(x=>"\""+String(x).replace(/"/g,"\"\"")+"\"").join(","))});
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["﻿"+rows.join("\n")],{type:"text/csv;charset=utf-8"}));a.download="labels.csv";a.click()};
+if(DATA.length&&isDone(DATA[idx].file))idx=nextTodo(idx);
+show(idx);
+</script></body></html>

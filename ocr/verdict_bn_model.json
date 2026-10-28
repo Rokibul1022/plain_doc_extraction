@@ -1,0 +1,20 @@
+{
+ "features": [
+  "bias",
+  "conf",
+  "min_char",
+  "agree",
+  "six",
+  "log_width"
+ ],
+ "weights": [
+  -7.11746965060145,
+  4.591591844806555,
+  2.385100229283606,
+  1.9674231455301798,
+  -1.2143107215398956e-11,
+  0.5503294434675928
+ ],
+ "n": 111,
+ "fitted_on": "cross-validated reads of verified real plates"
+}
