@@ -56,21 +56,23 @@ def _gen_chunk(args):
     import cv2
 
     cv2.setNumThreads(1)
-    seed, n = args
+    seed, n, style = args
     rng = np.random.default_rng(seed)
     xs, ys = [], []
     for _ in range(n):
-        img, label = sample(rng)
+        img, label = sample(rng, style)
         xs.append(img)
         ys.append([DIGITS.index(c) for c in label])
     return np.stack(xs), np.array(ys, np.int64)
 
 
-def build_dataset(n: int, seed: int, procs: int = 12):
+def build_dataset(n: int, seed: int, procs: int | None = None, style: str = "ink"):
+    import os
     from multiprocessing import Pool
 
+    procs = procs or max(2, min(int(os.environ.get("GEN_PROCS", "10")), (os.cpu_count() or 4) - 2))
     chunk = 500
-    jobs = [(seed * 100003 + i, chunk) for i in range(max(1, n // chunk))]
+    jobs = [(seed * 100003 + i, chunk, style) for i in range(max(1, n // chunk))]
     with Pool(procs) as pool:
         parts = pool.map(_gen_chunk, jobs)
     return np.concatenate([p[0] for p in parts]), np.concatenate([p[1] for p in parts])
@@ -100,10 +102,10 @@ def decode(logp: torch.Tensor) -> list[str]:
     return out
 
 
-def evaluate(model: nn.Module, n: int = 300) -> tuple[float, float]:
+def evaluate(model: nn.Module, n: int = 300, style: str = "ink") -> tuple[float, float]:
     rng = np.random.default_rng(12345)
     model.eval()
-    imgs, labels = zip(*(sample(rng) for _ in range(n)))
+    imgs, labels = zip(*(sample(rng, style) for _ in range(n)))
     dev = next(model.parameters()).device
     x = torch.from_numpy(np.stack(imgs)).float().div(255).unsqueeze(1).to(dev)
     with torch.no_grad():
@@ -137,8 +139,15 @@ def main() -> None:
     ap.add_argument("--real-aug", action="store_true", help="heavy geometric augmentation of the real plates")
     ap.add_argument("--onnx-out", help="export path (default: the shipped model)")
     ap.add_argument("--dataset", help="cache file for the synthetic dataset (npz); created if missing")
+    ap.add_argument("--eval-n", type=int, default=300, help="synthetic plates used for each progress check (small = fast)")
+    ap.add_argument("--style", choices=("ink", "relief", "relief_easy"), default="ink",
+                    help="relief: train on embossed plates (no ink) seen through opencv.relief.relief_view")
     ap.add_argument("--save", default=str(Path(__file__).resolve().parent.parent / "bangla_row.pt"))
     a = ap.parse_args()
+    if a.style.startswith("relief"):  # a separate model: the shipped ink reader stays untouched
+        a.onnx_out = a.onnx_out or str(ONNX_PATH.with_name("bangla_row_relief.onnx"))
+        if a.save.endswith("bangla_row.pt"):
+            a.save = a.save.replace("bangla_row.pt", "bangla_row_relief.pt")
 
     torch.manual_seed(0)
     torch.set_num_threads(8)
@@ -158,7 +167,7 @@ def main() -> None:
         d = np.load(a.dataset)
         sx, sy = d["x"], d["y"]
     else:
-        sx, sy = build_dataset(a.samples, seed=1)
+        sx, sy = build_dataset(a.samples, seed=1, style=a.style)
         if a.dataset:
             np.savez(a.dataset, x=sx, y=sy)
     print(f"synthetic dataset {sx.shape} ready in {time.time() - t0:.0f}s", flush=True)
@@ -229,7 +238,7 @@ def main() -> None:
         sched.step()
         run = 0.98 * run + 0.02 * loss.item() if step > 1 else loss.item()
         if step % 250 == 0 or step == a.steps:
-            ex, ch = evaluate(model)
+            ex, ch = evaluate(model, n=a.eval_n, style=a.style)
             print(f"step {step:5d}  loss {run:.3f}  synthetic exact {ex:.3f}  char {ch:.3f}  {time.time() - t0:.0f}s", flush=True)
     torch.save({k: v.cpu() for k, v in model.state_dict().items()}, a.save)
     export(model, Path(a.onnx_out) if a.onnx_out else None)

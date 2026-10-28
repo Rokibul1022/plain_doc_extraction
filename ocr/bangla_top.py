@@ -36,8 +36,9 @@ class TopReading:
 
 
 class BanglaTopReader:
-    def __init__(self, path: Path = MODEL_PATH) -> None:
+    def __init__(self, path: Path = MODEL_PATH, view=None) -> None:
         self.path = path
+        self.view = view  # optional transform of each crop before reading (e.g. opencv.relief.relief_view)
         self._sess = None
         self._tried = False
 
@@ -56,7 +57,7 @@ class BanglaTopReader:
 
             self._sess = ort.InferenceSession(str(self.path), sess_options=session_options(), providers=["CPUExecutionProvider"])
         except Exception as exc:
-            logger.warning("Bengali top-row reader unavailable: %s", exc)
+            logger.warning("Bengali top-row reader unavailable (%s): %s", self.path.name, exc)
 
     def read(self, crops: np.ndarray | list[np.ndarray], min_conf: float | None = None) -> TopReading:
         """`min_conf=None` applies the reliability cut-offs; `0.0` returns the raw best guess (for scoring)."""
@@ -67,6 +68,8 @@ class BanglaTopReader:
         crops = [c for c in crops if c is not None and c.size]
         if self._sess is None or not crops:
             return TopReading()
+        if self.view is not None:
+            crops = [self.view(c) for c in crops]
         x = np.stack([to_top_region(c) for c in crops]).astype(np.float32)[:, None] / 255.0
         city_logits, letter_logits = self._sess.run(None, {"x": x})
 

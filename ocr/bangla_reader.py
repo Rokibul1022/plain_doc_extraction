@@ -33,6 +33,7 @@ class RowReading:
     agreement: float = 0.0  # fraction of views that agreed with the final text
     n_views: int = 0
     raw: list[str] = field(default_factory=list)
+    alts: list[list[tuple[str, float]]] = field(default_factory=list)  # per position: (digit, share of the vote), best first
 
     @property
     def ok(self) -> bool:
@@ -73,8 +74,9 @@ def decode_probs(p: np.ndarray) -> tuple[str, list[float]]:
 
 
 class BanglaRowReader:
-    def __init__(self, path: Path = MODEL_PATH) -> None:
+    def __init__(self, path: Path = MODEL_PATH, view=None) -> None:
         self.path = path
+        self.view = view  # optional transform of each crop before reading (e.g. opencv.relief.relief_view)
         self._sess = None
         self._tried = False
 
@@ -93,7 +95,7 @@ class BanglaRowReader:
 
             self._sess = ort.InferenceSession(str(self.path), sess_options=session_options(), providers=["CPUExecutionProvider"])
         except Exception as exc:
-            logger.warning("Bengali digit reader unavailable: %s", exc)
+            logger.warning("Bengali digit reader unavailable (%s): %s", self.path.name, exc)
             self._sess = None
 
     def probs(self, regions: list[np.ndarray]) -> np.ndarray:
@@ -106,6 +108,8 @@ class BanglaRowReader:
         crops = [c for c in (crop if isinstance(crop, list) else [crop]) if c is not None and c.size]
         if self._sess is None or not crops:
             return RowReading()
+        if self.view is not None:
+            crops = [self.view(c) for c in crops]
         p = self.probs([region(c, top, trim) for c in crops for top, trim in VIEWS])
         decoded = [decode_probs(pi) for pi in p]
         raw = [d[0] for d in decoded]
@@ -113,15 +117,17 @@ class BanglaRowReader:
         if not six:
             return RowReading(raw=raw, n_views=len(decoded))
         # per-position vote, each view weighted by its own confidence in that character
-        text, conf = [], []
+        text, conf, alts = [], [], []
         for i in range(EXPECTED):
             tally: dict[str, float] = {}
             for t, c in six:
                 tally[t[i]] = tally.get(t[i], 0.0) + c[i]
             ch = max(tally, key=tally.get)
             text.append(ch)
+            total = sum(tally.values()) or 1.0
+            alts.append([(k, v / total) for k, v in sorted(tally.items(), key=lambda kv: -kv[1])])
             members = [c[i] for t, c in six if t[i] == ch]
             conf.append(float(np.mean(members)) * len(members) / len(six))
         final = "".join(text)
         agree = sum(1 for t, _ in six if t == final) / len(decoded)
-        return RowReading(final, float(np.mean(conf)), conf, agree, len(decoded), raw)
+        return RowReading(final, float(np.mean(conf)), conf, agree, len(decoded), raw, alts)

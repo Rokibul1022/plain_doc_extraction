@@ -21,7 +21,7 @@ REGION_TOP = 0.40  # the model sees the plate from 40 % of its height down
 # city/district words seen on plates (the first six are in the labelled data) plus common others
 CITY_WORDS = ["চট্ট মেট্রো", "ঢাকা মেট্রো", "ঝালকাঠি", "নোয়াখালী", "কুমিল্লা", "রাঙ্গামাটি", "চট্টগ্রাম", "খুলনা মেট্রো",
               "রাজশাহী মেট্রো", "সিলেট মেট্রো", "বরিশাল মেট্রো", "রংপুর মেট্রো", "গাজীপুর", "ময়মনসিংহ", "নারায়ণগঞ্জ",
-              "বগুড়া", "ফেনী", "কক্সবাজার"]
+              "বগুড়া", "ফেনী", "কক্সবাজার", "ঢাকা"]
 LETTERS = "কখগঘঙচছজঝঞটঠডঢণতথদধনপফবভমযরলশষসহ"
 TOP_H, TOP_W = 48, 160  # top-row model input
 TOP_REGION = 0.52  # the top-row model sees the plate down to 52 % of its height
@@ -143,6 +143,60 @@ def render_plate(rng: np.random.Generator) -> tuple[np.ndarray, str, tuple[int, 
     return img, digits, (city_i, -1 if layout_b else letter_i)
 
 
+def embossify(plate: np.ndarray, rng: np.random.Generator, difficulty: float = 0.6) -> np.ndarray:
+    """Turn a rendered plate into a plate whose characters are raised in the plate's own colour (no ink contrast).
+
+    The ink mask (glyphs, frame line, bolts) becomes a height map; light from a random direction shades its slopes
+    (a ridge on the lit side, a shadow on the other), then paint wear, grime and grain are added.
+    `difficulty` 0..1 scales the relief strength down and the wear / grime / grain up."""
+    h, w = plate.shape[:2]
+    f = plate.astype(np.float32)
+    body = np.median(f.reshape(-1, 3), axis=0)
+    ink = (np.linalg.norm(f - body, axis=2) > 45).astype(np.float32)
+    keep = 1.0 - ink
+    base = cv2.GaussianBlur(f * keep[..., None], (0, 0), 25) / np.maximum(cv2.GaussianBlur(keep, (0, 0), 25)[..., None], 1e-3)
+    sig = rng.uniform(1.2, 2.4) * h / 300.0
+    height = cv2.GaussianBlur(ink, (0, 0), sig)
+    gx = cv2.Sobel(height, cv2.CV_32F, 1, 0, ksize=3) / 8.0
+    gy = cv2.Sobel(height, cv2.CV_32F, 0, 1, ksize=3) / 8.0
+    th = rng.uniform(0, 2 * np.pi)
+    shade = rng.uniform(0.34 - 0.16 * difficulty, 0.46 - 0.04 * difficulty) * (gx * np.cos(th) + gy * np.sin(th)) * sig * 2.5
+    lit = np.clip(shade / (np.abs(shade).max() + 1e-6), 0, 1)
+    out = base * (1.0 + shade)[..., None] + 255.0 * (rng.uniform(0.0, 0.10) * lit ** 2)[..., None]
+    # paint wear / rust patches: hide part of the relief and change the surface colour there
+    wear = np.zeros((h, w), np.float32)
+    for _ in range(int(rng.integers(0, 1 + int(round(3 * difficulty))))):
+        cv2.ellipse(wear, (int(rng.uniform(0, w)), int(rng.uniform(0, h))), (int(rng.uniform(0.01, 0.07) * w), int(rng.uniform(0.01, 0.06) * h)),
+                    rng.uniform(0, 180), 0, 360, 1.0, -1)
+    wear = cv2.GaussianBlur(wear, (0, 0), rng.uniform(1.5, 4.0) * h / 300.0)
+    if wear.max() > 0:
+        patch = np.array([rng.uniform(150, 255), rng.uniform(150, 255), rng.uniform(130, 255)], np.float32) if rng.random() < 0.6             else np.array([rng.uniform(40, 110), rng.uniform(60, 120), rng.uniform(90, 170)], np.float32)  # bare metal / rust
+        a = np.clip(wear * rng.uniform(0.3, 0.7), 0, 1)[..., None]
+        out = out * (1 - a) + patch * a
+    # slow grime + grain
+    grime = cv2.resize(rng.normal(0, 1, (6, 8)).astype(np.float32), (w, h), interpolation=cv2.INTER_CUBIC)
+    out = out * (1.0 + rng.uniform(0.0, 0.025 * difficulty) * grime)[..., None] + rng.normal(0, rng.uniform(0.3, 0.3 + 1.7 * difficulty), out.shape)
+    return np.clip(out, 0, 255).astype(np.uint8)
+
+
+def _model_view(crop: np.ndarray, style: str, rng: np.random.Generator) -> np.ndarray:
+    """What the reader sees: the grey crop for style "ink"; the relief view (outlines) for style "relief"."""
+    if style.startswith("relief"):
+        from opencv.relief import relief_view
+
+        return relief_view(crop)
+    return crop
+
+
+def _plate_for(style: str, rng: np.random.Generator):
+    plate, label, ids = render_plate(rng)
+    if style == "relief_easy":  # clean, strong relief only (a first learning stage)
+        plate = embossify(plate, rng, 0.0)
+    elif style == "relief" and rng.random() < 0.75:  # 25 % stay ink plates: the relief reader must cope with those too
+        plate = embossify(plate, rng, float(rng.uniform(0.0, 1.0)))
+    return plate, label, ids
+
+
 def to_region(crop: np.ndarray) -> np.ndarray:
     """Model input from a rectified plate crop: lower region, grey, resized to IN_H x IN_W (uint8)."""
     h = crop.shape[0]
@@ -188,10 +242,10 @@ def degraded_crop(plate: np.ndarray, rng: np.random.Generator) -> np.ndarray:
                       interpolation=cv2.INTER_CUBIC)
 
 
-def sample(rng: np.random.Generator) -> tuple[np.ndarray, str]:
-    """(digit-row model input, 6 Bengali digits)."""
-    plate, label, _ = render_plate(rng)
-    return to_region(degraded_crop(plate, rng)), label
+def sample(rng: np.random.Generator, style: str = "ink") -> tuple[np.ndarray, str]:
+    """(digit-row model input, 6 Bengali digits). style "relief": embossed plates seen through `relief_view`."""
+    plate, label, _ = _plate_for(style, rng)
+    return to_region(_model_view(degraded_crop(plate, rng), style, rng)), label
 
 
 def to_top_region(crop: np.ndarray) -> np.ndarray:
@@ -202,7 +256,7 @@ def to_top_region(crop: np.ndarray) -> np.ndarray:
     return cv2.resize(g, (TOP_W, TOP_H), interpolation=cv2.INTER_AREA if g.shape[1] > TOP_W else cv2.INTER_CUBIC)
 
 
-def sample_top(rng: np.random.Generator) -> tuple[np.ndarray, int, int]:
+def sample_top(rng: np.random.Generator, style: str = "ink") -> tuple[np.ndarray, int, int]:
     """(top-row model input, city index, letter index)."""
-    plate, _, (city, letter) = render_plate(rng)
-    return to_top_region(degraded_crop(plate, rng)), city, letter
+    plate, _, (city, letter) = _plate_for(style, rng)
+    return to_top_region(_model_view(degraded_crop(plate, rng), style, rng)), city, letter

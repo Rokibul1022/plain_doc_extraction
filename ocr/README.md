@@ -40,3 +40,33 @@ curl -F file=@car.jpg http://localhost:8001/api/plate/scan       # GET /health, 
 The YOLO detector and the plate OCR model are downloaded while the image is built, so the running container needs no
 internet. CPU use is roughly `WORKERS x ORT_INTRA_THREADS` threads: keep it at or below the CPUs you give the
 container. Without Docker: `uvicorn ocr.server:app --port 8001 --workers 2`.
+
+## Reading pipeline and the relief readers
+
+`ocr/pipeline.py` ties the routes together:
+
+```python
+import cv2
+from ocr.pipeline import read_plate, render_report
+
+report = read_plate(cv2.imread("car.jpg"))     # YOLO (large frames) -> opencv scan -> readers
+report.text, report.verdict                      # digits the readers are not sure of are "?"; "readable|uncertain|unreadable"
+cv2.imwrite("result.png", render_report(report)) # cleaned plate + reading + confidence per digit
+```
+
+Two reader pairs run on every plate and the digits of the more confident one win (the first row is named by the ink reader, falling back to the relief reader when it is unsure; `TOP_RULE` in `pipeline.py`): the shipped **ink** readers (`bangla_row.onnx`,
+`bangla_top.onnx`) and **relief** readers (`bangla_row_relief.onnx`, `bangla_top_relief.onnx`) for embossed plates with no
+ink. The relief readers look at `opencv.relief.relief_view` (the plate's shading with lighting and colour removed) and were
+trained only on synthetic embossed plates (`ocr/synth_row.embossify`: a height map lit from a random direction plus wear,
+grime and grain):
+
+```bash
+python ocr/scripts/train_bangla_row.py --style relief --steps 6000 --lr 1e-3 --samples 20000 --dataset syn_relief.npz
+python ocr/scripts/train_bangla_top.py --style relief --steps 3000 --lr 1e-3 --samples 20000 --dataset syn_top_relief.npz
+python ocr/scripts/read_plates.py <folder> --out results/ [--truth labels.csv]   # csv: file,digits[,city,letter]
+python ocr/scripts/make_plain_label_page.py <folder>      # one HTML page to label the photos in the browser (exports that csv)
+```
+
+Training uses the GPU (`torch` CUDA); data generation uses the CPU (`GEN_PROCS` limits its processes). The top-row model knows
+19 city words (the plain "ঢাকা" was added); its class-letter head is weak (about 42% on synthetic plates), so the letter is
+shown only when it is confident. Thresholds in `pipeline.py` are heuristics, not calibrated on labelled embossed plates.
