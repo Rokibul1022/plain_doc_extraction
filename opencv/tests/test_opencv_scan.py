@@ -41,3 +41,17 @@ def test_relief_mode_runs_on_a_plate_without_ink():
     cv2.putText(img, "11-1990", (40, 130), cv2.FONT_HERSHEY_SIMPLEX, 1.8, (165, 205, 135), 6, cv2.LINE_AA)  # same colour: relief only
     r = scan(cv2.GaussianBlur(img, (0, 0), 1.0), relief="force")
     assert r.document.ndim == 2 and r.document.shape[1] == 960
+
+
+def test_concurrent_scans_in_threads_match_sequential_scans():
+    """The scan keeps no shared per-image state: a thread pool (as in the web service) must give the same corners."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    from opencv import find_corners
+
+    imgs = [synthetic_plate(t) for t in (-8, -3, 0, 4, 9, 12)] + [cv2.resize(synthetic_plate(5), (300, 200))]
+    sequential = [find_corners(i)[0] for i in imgs]
+    with ThreadPoolExecutor(4) as pool:
+        parallel = list(pool.map(lambda i: find_corners(i)[0], imgs * 3))
+    for k, corners in enumerate(parallel):
+        assert np.array_equal(corners, sequential[k % len(imgs)])

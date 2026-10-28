@@ -10,6 +10,8 @@ The colour-cluster hull finds roughly where the plate is, but its blob can merge
                         an area prior so the quad cannot shrink onto the letters.
 """
 
+import threading
+
 import cv2
 import numpy as np
 
@@ -17,9 +19,17 @@ from opencv.geometry import order_points
 
 BODY_W = 0.5
 LEAK_W = 0.9
-_BODY: np.ndarray | None = None  # plate body colour for the image being fitted (set by best_quad)
-_BODYOK: np.ndarray | None = None  # uint8 mask of the pixels within 26 of _BODY (set with it)
-_SCORE_CACHE: dict = {}  # edge_support results for the image being fitted
+class _Fit(threading.local):
+    """Per-image fitting state. Thread-local, so several scans can run at once in one process (e.g. a thread pool)."""
+
+    body: np.ndarray | None = None  # plate body colour for the image being fitted (set by best_quad)
+    body_ok: np.ndarray | None = None  # uint8 mask of the pixels within 26 of `body` (set with it)
+
+    def __init__(self) -> None:
+        self.score_cache: dict = {}  # edge_support results for the image being fitted
+
+
+_FIT = _Fit()
 EXTEND = 0.25  # corners may lie this far (share of the image size) beyond the frame: plates cut off by the picture
 WORK = 320  # longest side the search runs at
 
@@ -81,17 +91,16 @@ def body_share(lab: np.ndarray, q: np.ndarray, body: np.ndarray) -> float:
     n = cv2.countNonZero(m)
     if n == 0:
         return 0.0
-    if _BODYOK is not None and body is _BODY:  # per-image mask: no per-call norm over every pixel of the quad
-        return cv2.countNonZero(m & _BODYOK) / n
+    if _FIT.body_ok is not None and body is _FIT.body:  # per-image mask: no per-call norm over every pixel of the quad
+        return cv2.countNonZero(m & _FIT.body_ok) / n
     px = lab[m > 0]
     return float((np.linalg.norm(px - body, axis=1) < 26.0).mean())
 
 
 def _set_body(lab: np.ndarray, body: np.ndarray | None) -> None:
     """Fix the plate body colour for the image being fitted and precompute which pixels are within 26 of it."""
-    global _BODY, _BODYOK
-    _BODY = body
-    _BODYOK = None if body is None else (np.linalg.norm(lab - body, axis=2) < 26.0).astype(np.uint8)
+    _FIT.body = body
+    _FIT.body_ok = None if body is None else (np.linalg.norm(lab - body, axis=2) < 26.0).astype(np.uint8)
 
 
 def edge_support(lab: np.ndarray, q: np.ndarray, off: float) -> float:
@@ -101,12 +110,12 @@ def edge_support(lab: np.ndarray, q: np.ndarray, off: float) -> float:
     All colour samples of the four sides are gathered and read in ONE batch (same values as sampling side by side),
     and repeated quads are served from a per-image cache."""
     key = (q.dtype.str, q.tobytes(), float(off))
-    hit = _SCORE_CACHE.get(key)
+    hit = _FIT.score_cache.get(key)
     if hit is not None:
         return hit
     h, w = lab.shape[:2]
     c = q.mean(0)
-    body = _BODY if _BODY is not None else _body_colour(lab, q)
+    body = _FIT.body if _FIT.body is not None else _body_colour(lab, q)
     plan, pts_all = [], []
     for i in range(4):
         p, qq = q[i], q[(i + 1) % 4]
@@ -158,7 +167,7 @@ def edge_support(lab: np.ndarray, q: np.ndarray, off: float) -> float:
         leak = hits / n_tot if n_tot else 0.0
         tot += min(m, 40.0) / 40.0 * 0.5 + f * 0.5 - LEAK_W * leak
     val = tot / 4.0 + BODY_W * body_share(lab, q, body)
-    _SCORE_CACHE[key] = val
+    _FIT.score_cache[key] = val
     return val
 
 
@@ -462,7 +471,7 @@ def _global_body(small: np.ndarray, lab: np.ndarray, tq: list[np.ndarray]) -> np
 
 def best_quad(img: np.ndarray) -> tuple[np.ndarray, float] | None:
     """Best edge-verified quad (in input-image coordinates) and its support score."""
-    _SCORE_CACHE.clear()
+    _FIT.score_cache.clear()
     cands, lab, s = candidates(img)
     if not cands:
         return None
@@ -488,5 +497,5 @@ def best_quad(img: np.ndarray) -> tuple[np.ndarray, float] | None:
         top.append((edge_support(lab, r, off) + 0.25 * a, r))
     sc, q = max(top, key=lambda t: t[0])
     _set_body(lab, None)
-    _SCORE_CACHE.clear()
+    _FIT.score_cache.clear()
     return (q / s).astype(np.float32), float(sc)
