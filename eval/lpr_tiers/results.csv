@@ -1,0 +1,156 @@
+﻿tier,file,label_status,truth_digits,pred_digits,exact,digit_acc,truth_city,truth_letter,pred_top,city_correct,letter_correct,verdict,reliability,confidence,document,plate_found,source,plate_px
+easy,3615008.png,labelled,৮১০০৬৪,১১০০৬৪,0,0.833,চট্ট মেট্রো,ঢ,চট্ট মেট্রো,1,0,uncertain,0.596,0.906,scan,1,cv-model-unseen,138
+easy,3624762.png,labelled,১৪৫৮৫৭,১৪৫৮৫৭,1,1.0,ঢাকা মেট্রো,ট,,0,1,readable,0.845,0.978,typed,1,cv-model-unseen,148
+easy,3636971.png,labelled,০৫০৬৮৫,০৫০৬৪৫,0,0.833,চট্ট মেট্রো,ট,চট্ট মেট্রো,1,1,unreadable,0.328,0.807,scan,1,cv-model-unseen,160
+easy,3639495.png,labelled,১৩৪১৫১,,0,0.0,ঢাকা মেট্রো,ট,,0,1,unreadable,0.0,0.0,scan,1,cv-model-unseen,154
+easy,3651727.png,labelled,১১৯০৯৫,১১৬৯০০,0,0.333,চট্ট মেট্রো,চ,চট্ট মেট্রো,1,0,unreadable,0.041,0.537,scan,1,cv-model-unseen,116
+easy,3691667.png,labelled,১১০০৩০,১১০০৩০,1,1.0,ঝালকাঠি,ট,,0,1,readable,0.874,1.0,typed,1,cv-model-unseen,155
+easy,3693049.png,labelled,১১০০৯৪,১১০০৯৪,1,1.0,নোয়াখালী,ঢ,,0,0,uncertain,0.524,0.895,scan,1,cv-model-unseen,154
+easy,3696732.png,labelled,১১০১৭৭,১১০১৭৭,1,1.0,চট্ট মেট্রো,,চট্ট মেট্রো,1,,uncertain,0.751,1.0,scan,1,cv-model-unseen,160
+easy,3699845.png,labelled,৫৬১৭৪৬,৫৬১৭৪৬,1,1.0,ঢাকা মেট্রো,চ,ঢাকা মেট্রো,1,0,readable,0.872,0.999,typed,1,cv-model-unseen,149
+easy,3744325.png,labelled,১৩৫০৫৪,১৩৫০৬৪,0,0.833,ঢাকা মেট্রো,ঢ,ঢাকা মেট্রো,1,0,uncertain,0.679,0.933,scan,1,cv-model-unseen,132
+easy,3777312.png,labelled,১১০৯০২,১১০৯০২,1,1.0,চট্ট মেট্রো,ব,চট্ট মেট্রো,1,1,readable,0.869,1.0,typed,1,cv-model-unseen,136
+easy,3784473.png,labelled,১১৮৪০৪,১১৮৪০৮,0,0.833,চট্ট মেট্রো,ট,চট্ট মেট্রো,1,1,uncertain,0.722,0.999,scan,1,cv-model-unseen,159
+easy,3786913.png,labelled,১১৮৩৪৯,১১৮৩৪৯,1,1.0,চট্ট মেট্রো,ট,চট্ট মেট্রো,1,1,readable,0.87,0.998,typed,1,cv-model-unseen,147
+easy,3794786.png,labelled,১৫৫৭১৩,১৯৫১৩৩,0,0.5,ঢাকা মেট্রো,ঢব,ঢাকা মেট্রো,1,0,unreadable,0.026,0.45,scan,1,cv-model-unseen,114
+easy,3803852.png,labelled,১২৫৯২৮,১২৫৯২৮,1,1.0,চট্ট মেট্রো,গ,চট্ট মেট্রো,1,1,readable,0.876,1.0,typed,1,cv-model-unseen,161
+easy,3806876.png,labelled,১১০৮০৯,১১০৪০২,0,0.667,নোয়াখালী,ড,,1,0,uncertain,0.508,0.875,scan,1,cv-model-unseen,150
+easy,3824936.png,labelled,১১০০১৫,১১০০১৫,1,1.0,রাঙ্গামাটি,ট,,1,1,readable,0.848,0.978,typed,1,cv-model-unseen,155
+easy,3825496.png,labelled,১১০০১৩,১১০০১৩,1,1.0,চট্ট মেট্রো,ব,চট্ট মেট্রো,1,0,readable,0.868,1.0,typed,1,cv-model-unseen,134
+easy,3829350.png,labelled,১১০৮৯৫,১১০৮১৫,0,0.833,ফেনী,ট,ফেনী,1,0,uncertain,0.78,0.971,scan,1,cv-model-unseen,127
+easy,3867992.png,labelled,৫১০৯২৬,৫১০৯২৬,1,1.0,চট্ট মেট্রো,ম,চট্ট মেট্রো,1,0,readable,0.868,1.0,typed,1,cv-model-unseen,131
+easy,3880964.png,labelled,৫১৪১২২,৫১৪১২২,1,1.0,ঢাকা মেট্রো,ম,ঢাকা মেট্রো,1,0,readable,0.865,0.997,typed,1,cv-model-unseen,133
+easy,3887404.png,labelled,২৪৪০৩৩,২৪৪০৩৩,1,1.0,ঢাকা মেট্রো,ট,,1,1,readable,0.873,0.999,typed,1,cv-model-unseen,154
+easy,3906162.png,labelled,০৫০৫১৩,০৫০৫১৩,1,1.0,চট্ট মেট্রো,ট,চট্ট মেট্রো,1,1,readable,0.867,0.996,typed,1,cv-model-unseen,145
+easy,3910739.png,labelled,৮১১৩৮৬,৮১১৩৮৬,1,1.0,চট্ট মেট্রো,ঢ,চট্ট মেট্রো,1,0,readable,0.871,1.0,typed,1,cv-model-unseen,142
+easy,3932719.png,none,,১২৯৩১৯,,,,,চট্ট মেট্রো,,,readable,0.868,1.0,typed,1,shipped-model,133
+easy,3947746.png,none,,১১১৭৩৮,,,,,চট্ট মেট্রো,,,readable,0.823,0.966,typed,1,shipped-model,136
+easy,3949423.png,none,,১১০১৭২,,,,,চট্ট মেট্রো,,,uncertain,0.772,0.961,scan,1,shipped-model,153
+easy,3950189.png,none,,১১১৪৭০,,,,,চট্ট মেট্রো,,,readable,0.874,1.0,typed,1,shipped-model,153
+easy,3951268.png,none,,১১৫৩১৬,,,,,,,,readable,0.875,1.0,typed,1,shipped-model,158
+easy,3962618.png,none,,১২৫০২২,,,,,চট্ট মেট্রো,,,uncertain,0.661,0.905,scan,1,shipped-model,154
+easy,3971392.png,none,,১৪৩৫৪৪,,,,,,,,unreadable,0.034,0.456,scan,1,shipped-model,154
+easy,3976525.png,none,,১২০৭০৬,,,,,,,,uncertain,0.747,1.0,scan,1,shipped-model,150
+easy,4046797.png,none,,৮১১২০২,,,,,চট্ট মেট্রো,,,readable,0.873,1.0,typed,1,shipped-model,149
+easy,4053334.png,none,,০৫০২১০,,,,,চট্ট মেট্রো,,,uncertain,0.662,0.937,scan,1,shipped-model,145
+easy,4074850.png,none,,১৫১৪১০,,,,,ঢাকা মেট্রো,,,readable,0.871,0.999,typed,1,shipped-model,146
+easy,4096188.png,none,,১১১৯৬৪,,,,,চট্ট মেট্রো,,,readable,0.871,1.0,typed,1,shipped-model,142
+easy,4096993.png,none,,১১৮৭২১,,,,,চট্ট মেট্রো,,,uncertain,0.774,1.0,scan,1,shipped-model,154
+easy,4099361.png,none,,২২২৭৮৫,,,,,ঢাকা মেট্রো,,,readable,0.848,0.992,typed,1,shipped-model,157
+easy,4106802.png,none,,,,,,,,,,unreadable,0.0,0.0,scan,1,shipped-model,155
+easy,4111058.png,none,,৮১০০৭৪,,,,,চট্ট মেট্রো,,,readable,0.848,0.981,typed,1,shipped-model,143
+easy,4129657.png,none,,১১০৪৭৩,,,,,চট্ট মেট্রো,,,readable,0.868,1.0,typed,1,shipped-model,134
+easy,4138803.png,none,,১১০১২৬,,,,,,,,uncertain,0.554,0.908,scan,1,shipped-model,154
+easy,4140533.png,none,,১১১৯২১,,,,,চট্ট মেট্রো,,,readable,0.871,0.999,typed,1,shipped-model,146
+easy,4146821.png,none,,৫১২৭৫৬,,,,,চট্ট মেট্রো,,,readable,0.87,1.0,typed,1,shipped-model,139
+easy,4155191.png,none,,,,,,,চট্ট মেট্রো,,,unreadable,0.0,0.0,scan,1,shipped-model,136
+easy,4172348.png,none,,১১০০১৩,,,,,চট্ট মেট্রো,,,readable,0.876,1.0,typed,1,shipped-model,162
+easy,4174598.png,none,,১১২০৭৯,,,,,চট্ট মেট্রো,,,uncertain,0.624,0.923,scan,1,shipped-model,127
+easy,4183808.png,none,,১১১১৩৯,,,,,চট্ট মেট্রো,,,readable,0.828,0.965,typed,1,shipped-model,159
+easy,4188269.png,none,,০৫০০৩৪,,,,,চট্ট মেট্রো,,,readable,0.873,1.0,typed,1,shipped-model,151
+easy,4194619.png,none,,০২০৩৯৬,,,,,চট্ট মেট্রো,,,readable,0.869,0.998,typed,1,shipped-model,143
+easy,4198205.png,none,,০৫০২৩৯,,,,,চট্ট মেট্রো,,,readable,0.861,0.99,typed,1,shipped-model,152
+easy,4198664.png,none,,০৫০১৯৭,,,,,চট্ট মেট্রো,,,readable,0.873,0.999,typed,1,shipped-model,152
+medium,3592651.png,labelled,০০৩১২৮,০০০১২৮,0,0.833,চট্ট মেট্রো,ম,চট্ট মেট্রো,1,1,uncertain,0.79,0.981,scan,1,cv-model-unseen,111
+medium,3593981.png,labelled,১৫৬১৪৪,১৫৬১৯৯,0,0.667,ঢাকা মেট্রো,ব,চট্ট মেট্রো,0,1,unreadable,0.092,0.684,scan,1,cv-model-unseen,108
+medium,3595102.png,labelled,১১০৯৮৫,১১০৯৮৫,1,1.0,চট্ট মেট্রো,,চট্ট মেট্রো,1,,readable,0.87,1.0,typed,1,cv-model-unseen,139
+medium,3612899.png,labelled,১১০১৬৪,১১০১৬৪,1,1.0,চট্ট মেট্রো,ট,চট্ট মেট্রো,1,1,uncertain,0.794,0.997,scan,1,cv-model-unseen,154
+medium,3621846.png,unreadable,,৯১১৭০১,,,,,,,,unreadable,0.003,0.205,scan,1,shipped-model,12
+medium,3642243.png,labelled,১১০৬৫৭,১১০৬৫৭,1,1.0,চট্ট মেট্রো,,চট্ট মেট্রো,1,,uncertain,0.779,0.953,scan,1,cv-model-unseen,152
+medium,3655545.png,labelled,১৩১৭৯৬,১৩১৭৯৬,1,1.0,ঢাকা মেট্রো,চ,,1,1,readable,0.863,1.0,typed,1,cv-model-unseen,117
+medium,3697216.png,labelled,১৮৯০৫৬,২৮৯৯৫৪,0,0.5,চট্ট মেট্রো,,চট্ট মেট্রো,1,,unreadable,0.018,0.39,scan,1,cv-model-unseen,131
+medium,3699317.png,labelled,৫১২১৩৩,৫১২১৩৩,1,1.0,চট্ট মেট্রো,চ,চট্ট মেট্রো,1,1,readable,0.867,1.0,typed,1,cv-model-unseen,130
+medium,3711122.png,labelled,১১৮২৮২,১১৮২৮২,1,1.0,চট্ট মেট্রো,চ,চট্ট মেট্রো,1,1,readable,0.869,1.0,typed,1,cv-model-unseen,138
+medium,3743789.png,labelled,১১৬৭৩৩,১১৬৭৩৩,1,1.0,চট্ট মেট্রো,ট,চট্ট মেট্রো,1,1,readable,0.871,0.999,typed,1,cv-model-unseen,145
+medium,3745355.png,labelled,৮১০৭৮১,৮১০৭৮১,1,1.0,চট্ট মেট্রো,ঢ,চট্ট মেট্রো,1,0,readable,0.849,1.0,typed,1,cv-model-unseen,86
+medium,3766903.png,labelled,৩৪৮২৮২,৩৮১৮২১,0,0.167,ঢাকা মেট্রো,গ,,0,0,unreadable,0.297,0.79,scan,1,cv-model-unseen,150
+medium,3771527.png,labelled,১১১৫৪১,৮১১৫৪২,0,0.667,,,চট্ট মেট্রো,,,uncertain,0.716,0.945,scan,1,cv-model-unseen,152
+medium,3773658.png,labelled,১১৭১৬৫,১১৭১৬৫,1,1.0,,,কুমিল্লা,,,uncertain,0.514,0.96,scan,1,cv-model-unseen,135
+medium,3776224.png,labelled,১১০৬৮৫,১১০৬৮৫,1,1.0,চট্ট মেট্রো,V,চট্ট মেট্রো,1,0,readable,0.866,1.0,typed,1,cv-model-unseen,129
+medium,3778935.png,labelled,১১১৫৭৩,১১১৫৭৩,1,1.0,চট্ট মেট্রো,ট,চট্ট মেট্রো,1,1,readable,0.873,1.0,typed,1,cv-model-unseen,152
+medium,3779847.png,labelled,৫১২৯৪৫,৫১২৯৯৫,0,0.833,ঢাকা মেট্রো,চ,,0,1,unreadable,0.133,0.665,scan,1,cv-model-unseen,137
+medium,3791004.png,labelled,০৫০২৮০,০৫০২৪০,0,0.833,ফেনী,ট,চট্ট মেট্রো,0,1,uncertain,0.668,0.928,scan,1,cv-model-unseen,160
+medium,3792726.png,labelled,১১১০০২,১১১০০২,1,1.0,চট্ট মেট্রো,গ,চট্ট মেট্রো,1,0,readable,0.865,0.996,typed,1,cv-model-unseen,139
+medium,3795341.png,labelled,০১২১৩৩,৫১২১৩৩,0,0.833,চট্ট মেট্রো,চ,চট্ট মেট্রো,1,1,readable,0.863,0.995,typed,1,cv-model-unseen,136
+medium,3795494.png,labelled,১৮১৩১০,১৮১৩১০,1,1.0,ঢাকা মেট্রো,ট,,0,0,uncertain,0.64,0.922,scan,1,cv-model-unseen,153
+medium,3810253.png,labelled,১২১৯৯৭,১২১৯৯৭,1,1.0,ঢাকা মেট্রো,ড,,1,0,uncertain,0.558,0.905,scan,1,cv-model-unseen,131
+medium,3814027.png,labelled,১১০০১৫,১১০০১৫,1,1.0,রাঙ্গামাটি,ট,,0,0,uncertain,0.441,0.899,scan,1,cv-model-unseen,143
+medium,3831216.png,labelled,১১১৪৪০,১১৪৪০৩,0,0.5,চট্ট মেট্রো,জ,চট্ট মেট্রো,1,0,uncertain,0.453,0.914,scan,1,cv-model-unseen,157
+medium,3831581.png,labelled,১৩৫৩৩৪,৯১১৫১৭,0,0.0,চট্ট মেট্রো,গ,চট্ট মেট্রো,1,1,unreadable,0.042,0.51,scan,1,cv-model-unseen,157
+medium,3832777.png,labelled,১১৩৪৮০,১১৩৪৮০,1,1.0,চট্ট মেট্রো,চ,চট্ট মেট্রো,1,1,readable,0.855,0.989,typed,1,cv-model-unseen,136
+medium,3838118.png,unreadable,,৫১০০৮০,,,,,চট্ট মেট্রো,,,unreadable,0.388,0.856,scan,1,shipped-model,122
+medium,3838327.png,labelled,০২০৮৫৩,৫২০৮৫৩,0,0.833,চট্ট মেট্রো,ট,চট্ট মেট্রো,1,1,unreadable,0.275,0.769,scan,1,cv-model-unseen,122
+medium,3890623.png,labelled,১১৬৬৬৭,১১৬৬৬৭,1,1.0,চট্ট মেট্রো,চ,চট্ট মেট্রো,1,1,readable,0.874,1.0,typed,1,cv-model-unseen,154
+medium,3898734.png,labelled,১২৯১০১,১২৯১০১,1,1.0,চট্ট মেট্রো,গ,চট্ট মেট্রো,1,0,uncertain,0.731,1.0,scan,1,cv-model-unseen,119
+medium,3904785.png,labelled,০৫০৬৯৯,০৬০৬৯১,0,0.667,চট্ট মেট্রো,ট,চট্ট মেট্রো,1,1,unreadable,0.323,0.817,scan,1,cv-model-unseen,150
+medium,3918003.png,labelled,৮১০৩৪২,৮১০৩৭২,0,0.833,চট্ট মেট্রো,ই,চট্ট মেট্রো,1,0,unreadable,0.369,0.839,scan,1,cv-model-unseen,140
+medium,3922747.png,labelled,১১১০৯৬,১১১০৯৬,1,1.0,চট্ট মেট্রো,ড,চট্ট মেট্রো,1,0,uncertain,0.785,0.999,scan,1,cv-model-unseen,125
+medium,3923905.png,labelled,১১০৭৬২,১১০৭৬২,1,1.0,চট্ট মেট্রো,জ,চট্ট মেট্রো,1,1,uncertain,0.797,0.965,scan,1,cv-model-unseen,123
+medium,3924660.png,none,,১১২৭৬১,,,,,ঢাকা মেট্রো,,,readable,0.862,0.991,typed,1,shipped-model,141
+medium,3925375.png,none,,১১০২৮২,,,,,চট্ট মেট্রো,,,uncertain,0.573,0.913,scan,1,shipped-model,159
+medium,3934405.png,none,,৫১২৬২৯,,,,,,,,uncertain,0.502,0.899,scan,1,shipped-model,148
+medium,3936087.png,none,,১৩৭৯০১,,,,,চট্ট মেট্রো,,,readable,0.865,0.999,typed,1,shipped-model,128
+medium,3936557.png,none,,১১৬৭৭৯,,,,,চট্ট মেট্রো,,,readable,0.874,1.0,typed,1,shipped-model,155
+medium,3936781.png,none,,১১০২১০,,,,,,,,readable,0.869,0.999,typed,1,shipped-model,140
+medium,3940037.png,none,,৫১১৪৪৪,,,,,চট্ট মেট্রো,,,readable,0.868,1.0,typed,1,shipped-model,133
+medium,3942672.png,none,,৮১০০৭৪,,,,,চট্ট মেট্রো,,,readable,0.869,0.999,typed,1,shipped-model,139
+medium,3992272.png,none,,১১৮৪৯৯,,,,,চট্ট মেট্রো,,,readable,0.862,0.992,typed,1,shipped-model,145
+medium,4099423.png,none,,১১৫৩৯১,,,,,চট্ট মেট্রো,,,readable,0.873,1.0,typed,1,shipped-model,153
+medium,4107195.png,none,,১১৫১১২,,,,,চট্ট মেট্রো,,,uncertain,0.511,0.902,scan,1,shipped-model,148
+medium,4170388.png,none,,১১০৬৩২,,,,,চট্ট মেট্রো,,,readable,0.865,0.993,typed,1,shipped-model,150
+medium,4173032.png,none,,১১৭০৪৪,,,,,ঢাকা মেট্রো,,,unreadable,0.281,0.836,scan,1,shipped-model,144
+medium,4183807.png,none,,১১১০৩৯,,,,,চট্ট মেট্রো,,,uncertain,0.708,0.924,scan,1,shipped-model,159
+medium,4204610.png,none,,৫২২৫৪৬,,,,,,,,uncertain,0.755,0.957,scan,1,shipped-model,129
+medium,4287845.png,none,,১১০১০২,,,,,চট্ট মেট্রো,,,readable,0.866,0.998,typed,1,shipped-model,136
+medium,4388468.png,none,,৫১৯৯৯৪,,,,,,,,unreadable,0.072,0.575,scan,1,shipped-model,132
+extreme,3610964.png,labelled,১১২৭৫৯,১১২৭৫৯,1,1.0,,,চট্ট মেট্রো,,,uncertain,0.6,0.995,scan,1,cv-model-unseen,125
+extreme,3612347.png,labelled,১২৫৭২৭,১২৫৭১৭,0,0.833,চট্ট মেট্রো,গ,চট্ট মেট্রো,1,0,uncertain,0.659,0.934,scan,1,cv-model-unseen,139
+extreme,3612466.png,labelled,১১১৯৪৩,১১১৯৪৩,1,1.0,চট্ট মেট্রো,ট,চট্ট মেট্রো,1,1,uncertain,0.596,0.91,scan,1,cv-model-unseen,143
+extreme,3614338.png,labelled,১১০৫০০,১১০৫০০,1,1.0,চট্ট মেট্রো,ক,চট্ট মেট্রো,1,0,uncertain,0.581,0.917,scan,1,cv-model-unseen,152
+extreme,3620548.png,labelled,২২৪৯৯৩,২৩৯৯১৬,0,0.333,ঢাকা মেট্রো,ট,,1,1,unreadable,0.11,0.701,scan,1,cv-model-unseen,131
+extreme,3626299.png,labelled,১২৮০৭৩,১২৮০৭৩,1,1.0,চট্ট মেট্রো,,চট্ট মেট্রো,1,,uncertain,0.737,0.949,scan,1,cv-model-unseen,129
+extreme,3628621.png,unreadable,,১০৮৪৩০,,,,,,,,uncertain,0.437,0.895,scan,1,shipped-model,133
+extreme,3639608.png,unreadable,,,,,,,চট্ট মেট্রো,,,unreadable,0.0,0.0,scan,1,shipped-model,153
+extreme,3650838.png,unreadable,,১৪৭৩৮৯,,,,,,,,unreadable,0.159,0.709,scan,1,shipped-model,160
+extreme,3704406.png,labelled,১১৭৪৮৮,১১৭৪৮৮,1,1.0,চট্ট মেট্রো,ঢ,চট্ট মেট্রো,1,0,readable,0.855,1.0,typed,1,cv-model-unseen,98
+extreme,3706250.png,labelled,১৩৬৫২৪,১৩৬৫২৪,1,1.0,চট্ট মেট্রো,,চট্ট মেট্রো,1,,readable,0.869,0.999,typed,1,cv-model-unseen,140
+extreme,3706295.png,labelled,৫১১৭৮৭,৫১১৭৮৭,1,1.0,চট্ট মেট্রো,চ,চট্ট মেট্রো,1,0,readable,0.867,0.998,typed,1,cv-model-unseen,134
+extreme,3709797.png,unreadable,,১১২১০৮,,,,,,,,readable,0.809,0.972,typed,1,shipped-model,133
+extreme,3722205.png,labelled,১১০৯৮৫,১১০৯৮৫,1,1.0,চট্ট মেট্রো,জ,চট্ট মেট্রো,1,0,readable,0.872,1.0,typed,1,cv-model-unseen,147
+extreme,3732408.png,labelled,১১৬৯৯৯,১৯৪৪৪৪,0,0.167,চট্ট মেট্রো,ট,,1,1,unreadable,0.048,0.527,scan,1,cv-model-unseen,159
+extreme,3741561.png,labelled,১১৪৩৮৯,১১৪৩৮১,0,0.833,চট্ট মেট্রো,চ,চট্ট মেট্রো,1,1,uncertain,0.568,0.913,scan,1,cv-model-unseen,139
+extreme,3741675.png,labelled,১১০১৭৮,১১০১৭৮,1,1.0,,,,,,readable,0.872,0.997,typed,1,cv-model-unseen,158
+extreme,3742657.png,labelled,১১৫৯৪৭,১১৫৯৪৭,1,1.0,চট্ট মেট্রো,ন,,0,0,unreadable,0.258,0.763,scan,1,cv-model-unseen,136
+extreme,3766657.png,labelled,১২৭০৮১,১২৭০৮২,0,0.833,চট্ট মেট্রো,গ,চট্ট মেট্রো,1,0,unreadable,0.153,0.777,scan,1,cv-model-unseen,119
+extreme,3770306.png,labelled,০২০৭৩৭,০২০৪৪৭,0,0.667,,,চট্ট মেট্রো,,,uncertain,0.468,0.885,scan,1,cv-model-unseen,145
+extreme,3770823.png,labelled,১৩৫৩২৫,১৩৫৩২৫,1,1.0,,,চট্ট মেট্রো,,,unreadable,0.335,0.872,scan,1,cv-model-unseen,127
+extreme,3771245.png,labelled,৫১২৪৪৫,৫১২৮৪৫,0,0.833,চট্ট মেট্রো,চ,চট্ট মেট্রো,1,1,readable,0.86,0.995,typed,1,cv-model-unseen,126
+extreme,3773930.png,labelled,২২৮৪২০,২২৮৪২০,1,1.0,ঢাকা মেট্রো,ট,,1,1,readable,0.869,0.995,typed,1,cv-model-unseen,153
+extreme,3789192.png,labelled,১১০৩৮১,১১০৩৮১,1,1.0,চট্ট মেট্রো,জ,চট্ট মেট্রো,1,1,readable,0.874,0.999,typed,1,cv-model-unseen,155
+extreme,3789351.png,labelled,১১০৬৮৭,১১০৬৮৭,1,1.0,চট্ট মেট্রো,জ,চট্ট মেট্রো,1,0,readable,0.86,0.998,typed,1,cv-model-unseen,114
+extreme,3812389.png,labelled,১১০৮৮৮,১১০৮৮৩,0,0.833,চট্ট মেট্রো,ট,চট্ট মেট্রো,1,1,uncertain,0.442,0.924,scan,1,cv-model-unseen,158
+extreme,3828562.png,labelled,১১১১২১,১১১১২১,1,1.0,চট্ট মেট্রো,অ,চট্ট মেট্রো,1,0,uncertain,0.74,1.0,scan,1,cv-model-unseen,135
+extreme,3841920.png,unreadable,,১১২২০১,,,,,চট্ট মেট্রো,,,uncertain,0.76,0.958,scan,1,shipped-model,136
+extreme,3856220.png,labelled,৫১২৯৪৫,৫১২৯৪৫,1,1.0,চট্ট মেট্রো,চ,চট্ট মেট্রো,1,1,uncertain,0.584,0.885,scan,1,cv-model-unseen,151
+extreme,3868496.png,unreadable,,১২১৪১৪,,,,,চট্ট মেট্রো,,,unreadable,0.056,0.604,scan,1,shipped-model,158
+extreme,3905286.png,labelled,১১০১২৮,১১০১২৮,1,1.0,নোয়াখালী,ট,ঢাকা মেট্রো,0,1,unreadable,0.167,0.794,scan,1,cv-model-unseen,146
+extreme,3910194.png,labelled,০৫০৭৩৫,১৫০৭৩৫,0,0.833,চট্ট মেট্রো,ট,চট্ট মেট্রো,1,1,uncertain,0.418,0.872,scan,1,cv-model-unseen,157
+extreme,3940750.png,none,,১১২৭৩৫,,,,,,,,unreadable,0.379,0.813,scan,1,shipped-model,157
+extreme,3941836.png,none,,১১০২৭৩,,,,,চট্ট মেট্রো,,,readable,0.855,0.988,typed,1,shipped-model,128
+extreme,3943547.png,none,,১৯৯১১২,,,,,,,,unreadable,0.008,0.393,scan,1,shipped-model,8
+extreme,3944886.png,none,,১১৭৯৮৯,,,,,চট্ট মেট্রো,,,uncertain,0.748,0.957,scan,1,shipped-model,115
+extreme,3957846.png,none,,১১১৫৮৯,,,,,চট্ট মেট্রো,,,readable,0.866,1.0,typed,1,shipped-model,128
+extreme,3988692.png,none,,১১২১৩৩,,,,,চট্ট মেট্রো,,,readable,0.873,1.0,typed,1,shipped-model,150
+extreme,3996135.png,none,,২০২৩১১,,,,,,,,readable,0.872,1.0,typed,1,shipped-model,146
+extreme,3996201.png,none,,,,,,,,,,unreadable,0.0,0.0,scan,1,shipped-model,134
+extreme,4053751.png,none,,০৯৩৫০০,,,,,,,,unreadable,0.004,0.209,scan,1,shipped-model,9
+extreme,4071523.png,none,,৫১৭৩৯৬,,,,,,,,unreadable,0.205,0.754,scan,1,shipped-model,153
+extreme,4145343.png,none,,১৫৫১৪১,,,,,চট্ট মেট্রো,,,unreadable,0.316,0.858,scan,1,shipped-model,140
+extreme,4165423.png,none,,৫১২০৪৯,,,,,চট্ট মেট্রো,,,readable,0.86,0.996,typed,1,shipped-model,122
+extreme,4180314.png,none,,১১১৪৭৩,,,,,চট্ট মেট্রো,,,uncertain,0.626,0.918,scan,1,shipped-model,117
+extreme,4193979.png,none,,,,,,,,,,no plate found,,,,0,,
+extreme,4206148.png,none,,১১০৩০০,,,,,ঝালকাঠি,,,uncertain,0.513,0.861,scan,1,shipped-model,159
+extreme,4270167.png,none,,১১১৫০১,,,,,চট্ট মেট্রো,,,uncertain,0.662,0.886,scan,1,shipped-model,156
+extreme,4287399.png,none,,১১৯৯৯৪,,,,,চট্ট মেট্রো,,,unreadable,0.058,0.577,scan,1,shipped-model,159
+extreme,4295646.png,none,,১১০১৪৩,,,,,,,,uncertain,0.444,0.869,scan,1,shipped-model,161
+extreme,4354636.png,none,,১১৪৪২৭,,,,,চট্ট মেট্রো,,,readable,0.861,0.993,typed,1,shipped-model,136

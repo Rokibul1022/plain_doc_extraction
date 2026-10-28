@@ -1,0 +1,209 @@
+document,file,found,issues,ms,note,plate_width_px,quality,quality_level,reliability,script,source,steps,text,verdict
+typed,3592651.png,1,,1307,,111,99,good,0.94,bengali,classical,denoise(sigma=5.2) > upscale x1.3 > contrast,০০-০১২৮,readable
+scan,3593981.png,1,,163,,108,99,good,0.0,bengali,crop,contrast,১৭-৮৩১৬,unreadable
+typed,3595102.png,1,dark,150,,139,89,good,0.98,bengali,crop,low-light > upscale x1.5 > contrast,১১-০৯৮৫,readable
+typed,3601102.png,1,,166,,122,98,good,0.96,bengali,crop,contrast,১১-৪৬৮৯,readable
+scan,3607806.png,1,compressed,158,,157,100,good,0.83,bengali,crop,deblock(x1.21) > contrast,৬৩-০০০৭,uncertain
+scan,3610964.png,1,,153,,125,99,good,,bengali,crop,contrast,,unreadable
+scan,3612347.png,1,,179,,139,100,good,0.73,bengali,crop,upscale x1.2 > contrast,১২-৫৭১৭,uncertain
+scan,3612466.png,1,,173,,144,100,good,0.62,bengali,crop,contrast,১৫-১৯৪৩,uncertain
+scan,3612899.png,1,compressed,303,,154,99,good,0.3,bengali,crop,deblock(x1.20) > denoise(sigma=5.7) > contrast,০১-০১৬৪,unreadable
+scan,3614338.png,1,,160,,152,98,good,,bengali,crop,upscale x1.4 > contrast,,unreadable
+scan,3615008.png,1,,212,,138,99,good,0.41,bengali,crop,denoise(sigma=5.5) > upscale x1.3 > contrast,৫১-০০৬৪,unreadable
+scan,3620548.png,1,compressed,159,,131,100,good,0.14,bengali,crop,deblock(x1.18) > contrast,২৫-৯৯৭৬,unreadable
+scan,3621846.png,1,low_resolution blurry,151,,12,15,unreadable,,bengali,learned,upscale x4.0 > contrast > sharpen,,unreadable
+scan,3624762.png,1,,171,,150,100,good,0.89,bengali,crop,contrast,১৪-৫৮৫৭,uncertain
+scan,3626299.png,1,,162,,129,100,good,0.34,bengali,crop,upscale x1.3 > contrast,১২-৮০৭৩,unreadable
+typed,3626931.png,1,,154,,141,100,good,0.93,bengali,crop,upscale x1.2 > contrast,৫৪-১২২০,readable
+scan,3628621.png,1,,155,,134,100,good,0.14,bengali,crop,upscale x1.0 > contrast,৫৩-৮৪৩০,unreadable
+scan,3636971.png,1,,165,,160,100,good,0.41,bengali,crop,upscale x1.0 > contrast,০৬-০৬৪৫,unreadable
+scan,3639495.png,1,,164,,156,100,good,0.04,bengali,crop,contrast,৪৩-৪১৫১,unreadable
+scan,3639608.png,1,,166,,153,100,good,0.68,bengali,crop,contrast,৫১-৮৫২৬,uncertain
+typed,3641575.png,1,dark,159,,148,97,good,0.97,bengali,crop,low-light > upscale x1.1 > contrast,১১-০৮৭০,readable
+scan,3641833.png,1,,159,,134,100,good,0.11,bengali,crop,contrast,৮১-৩৬৯০,unreadable
+scan,3642243.png,1,dark,150,,152,90,good,0.43,bengali,crop,low-light > upscale x1.1 > contrast,১১-০৬৫৫,unreadable
+scan,3650838.png,1,,158,,160,100,good,0.01,bengali,crop,upscale x1.3 > contrast,৫৮-৬৭৩১,unreadable
+scan,3651727.png,1,,134,,117,100,good,0.0,bengali,crop,contrast,১১-৬৯৯০,unreadable
+scan,3654741.png,1,dark,170,,162,93,good,0.88,bengali,crop,low-light > upscale x1.3 > contrast,১১-০৯৫৬,uncertain
+typed,3655545.png,1,,178,,115,100,good,0.98,bengali,crop,upscale x1.2 > contrast,১৩-১৭৯৬,readable
+typed,3691667.png,1,,264,,155,99,good,0.98,bengali,crop,contrast,১১-০০৩০,readable
+scan,3691673.png,1,,167,,153,100,good,0.03,bengali,crop,upscale x1.1 > contrast,১১-৫৯৫৮,unreadable
+scan,3693049.png,1,,184,,155,100,good,0.05,bengali,crop,upscale x1.5 > contrast,৯১-০০৯৪,unreadable
+scan,3696732.png,1,,154,,160,97,good,0.24,bengali,crop,upscale x1.3 > contrast,১১-০১৭৭,unreadable
+scan,3697216.png,1,,172,,131,100,good,0.02,bengali,crop,contrast,২৮-৩০৪৭,unreadable
+typed,3699317.png,1,,141,,130,100,good,0.97,bengali,crop,upscale x1.6 > contrast,৫১-২১৩৩,readable
+typed,3699845.png,1,,167,,148,100,good,0.98,bengali,crop,upscale x1.1 > contrast,৫৬-১৭৪৬,readable
+typed,3704406.png,1,,165,,98,95,good,0.98,bengali,crop,upscale x1.1 > contrast,১১-৭৪৮৮,readable
+typed,3706250.png,1,,174,,128,100,good,0.97,bengali,crop,contrast,১৩-৬৫২৪,readable
+typed,3706295.png,1,,167,,135,100,good,0.96,bengali,crop,contrast,৫২-১৭৮৭,readable
+scan,3709797.png,1,,169,,133,94,good,0.56,bengali,crop,upscale x1.2 > contrast,১১-২১৩৮,uncertain
+typed,3711122.png,1,,168,,140,100,good,0.98,bengali,crop,contrast,১১-৮২৮২,readable
+scan,3713103.png,1,,163,,157,100,good,0.29,bengali,crop,contrast,১১-০০৩০,unreadable
+typed,3720021.png,1,dark,166,,148,93,good,0.9,bengali,crop,low-light > upscale x1.4 > contrast,১১-১৮৪১,readable
+typed,3722205.png,1,dark,127,,147,89,good,0.99,bengali,crop,low-light > upscale x1.4 > contrast,১১-০৯৮৫,readable
+scan,3729092.png,1,,146,,126,100,good,0.12,bengali,crop,upscale x1.3 > contrast,১১-৮৩৬৩,unreadable
+scan,3732408.png,1,dark,140,,159,100,good,,bengali,crop,low-light > upscale x1.0 > contrast,,unreadable
+typed,3733102.png,1,,176,,159,100,good,0.99,bengali,crop,upscale x1.3 > contrast,১১-১৩৭১,readable
+scan,3733913.png,1,,188,,159,100,good,0.8,bengali,crop,contrast,১১-৫৪৬২,uncertain
+scan,3733916.png,1,,156,,153,100,good,,bengali,crop,contrast,,unreadable
+typed,3741561.png,1,,148,,144,100,good,0.99,bengali,crop,upscale x1.1 > contrast,১১-৪৩৮১,readable
+scan,3741675.png,1,,149,,158,100,good,0.64,bengali,crop,upscale x1.1 > contrast,১১-০১৭৮,uncertain
+scan,3742657.png,1,,152,,136,100,good,0.03,bengali,crop,upscale x1.2 > contrast,২৫-৫১৪৪,unreadable
+scan,3743789.png,1,,222,,153,100,good,0.47,bengali,crop,upscale x1.1 > contrast,১১-৬৭৩৩,uncertain
+scan,3744325.png,1,,237,,128,99,good,0.33,bengali,crop,denoise(sigma=4.9) > contrast,১৩-৬০৬৯,unreadable
+typed,3745355.png,1,,226,,86,89,good,0.98,bengali,learned+quad,upscale x1.5 > contrast,৮১-০৭৮১,readable
+typed,3758491.png,1,dark,136,,135,89,good,0.97,bengali,crop,low-light > upscale x1.5 > contrast,১১-০৭২৬,readable
+scan,3766657.png,1,,160,,120,99,good,,bengali,crop,upscale x1.2 > contrast,,unreadable
+scan,3766903.png,1,,145,,150,100,good,,bengali,crop,upscale x1.1 > contrast,,unreadable
+scan,3770306.png,1,,148,,143,100,good,0.87,bengali,crop,upscale x1.3 > contrast,০২-০৪৬৭,uncertain
+scan,3770823.png,1,,166,,127,100,good,0.65,bengali,crop,upscale x1.3 > contrast,১৬-৫৩২৫,uncertain
+scan,3771245.png,1,,155,,126,100,good,0.87,bengali,crop,upscale x1.3 > contrast,৫১-২৮৪৫,uncertain
+scan,3771527.png,1,dark,141,,142,88,good,0.72,bengali,crop,low-light > upscale x1.2 > contrast,১১-১৫৪১,uncertain
+scan,3773658.png,1,,134,,136,100,good,,bengali,crop,contrast,,unreadable
+scan,3773930.png,1,dark,149,,155,83,good,,bengali,crop,low-light > upscale x1.1 > contrast,,unreadable
+typed,3776224.png,1,,140,,129,100,good,0.99,bengali,crop,upscale x1.3 > contrast,১১-০৬৮৫,readable
+typed,3777312.png,1,,152,,136,100,good,0.98,bengali,crop,upscale x1.2 > contrast,১১-০৯০২,readable
+scan,3778935.png,1,,149,,152,100,good,0.81,bengali,crop,upscale x1.1 > contrast,১১-১৫৭৩,uncertain
+typed,3779284.png,1,,160,,158,99,good,0.97,bengali,crop,contrast,১১-০০৩০,readable
+scan,3779847.png,1,,161,,137,100,good,0.06,bengali,crop,upscale x1.4 > contrast,৫১-২৫৫৫,unreadable
+scan,3783331.png,1,,148,,159,85,good,0.17,bengali,crop,contrast,১১-১৪১৫,unreadable
+scan,3784473.png,1,,140,,159,100,good,0.06,bengali,crop,upscale x1.0 > contrast,১১-৪৪০৪,unreadable
+scan,3786913.png,1,,116,,148,100,good,0.28,bengali,crop,contrast,১১-৮৩৮৯,unreadable
+scan,3788647.png,1,dark,133,,142,95,good,0.75,bengali,crop,low-light > upscale x1.2 > contrast,১১-০৪৪৫,uncertain
+typed,3789192.png,1,,114,,161,100,good,0.97,bengali,crop,upscale x1.0 > contrast,১১-০৩৮১,readable
+typed,3789351.png,1,dark,159,,115,95,good,0.98,bengali,crop,low-light > upscale x1.4 > contrast,১১-০৬৮৭,readable
+scan,3791004.png,1,,141,,160,100,good,0.31,bengali,crop,upscale x1.4 > contrast,০৬-০২৮০,unreadable
+typed,3792726.png,1,,114,,139,100,good,0.98,bengali,crop,upscale x1.2 > contrast,১১-১০০২,readable
+scan,3793921.png,1,,105,,159,100,good,0.33,bengali,crop,upscale x1.3 > contrast,৩১-৩৭১০,unreadable
+scan,3794786.png,1,dark,139,,127,97,good,0.0,bengali,crop,low-light > contrast,১৯-৫৭৯৩,unreadable
+scan,3795341.png,1,,112,,137,100,good,0.54,bengali,crop,upscale x1.4 > contrast,৫১-২১৩৩,uncertain
+scan,3795494.png,1,,120,,153,100,good,0.35,bengali,crop,upscale x1.1 > contrast,১৮-১৬১০,unreadable
+typed,3803852.png,1,,134,,161,100,good,0.99,bengali,crop,upscale x1.1 > contrast,১২-৫৯২৮,readable
+scan,3804774.png,1,,157,,140,100,good,0.3,bengali,crop,upscale x1.1 > contrast,০৫-০৫৫৮,unreadable
+typed,3805123.png,1,,133,,128,100,good,0.98,bengali,crop,upscale x1.1 > contrast,১৪-৬২৩৩,readable
+scan,3806876.png,1,,129,,149,100,good,0.4,bengali,crop,upscale x1.1 > contrast,১১-০৪০১,unreadable
+typed,3810253.png,1,,162,,136,100,good,0.95,bengali,crop,upscale x1.2 > contrast,১২-১১৯৭,readable
+scan,3812389.png,1,,118,,155,100,good,,bengali,crop,upscale x1.7 > contrast,,unreadable
+scan,3814027.png,1,,135,,143,100,good,0.48,bengali,crop,upscale x1.8 > contrast,১১-০০৯৫,uncertain
+scan,3823805.png,1,,122,,140,100,good,0.4,bengali,crop,contrast,১৪-৯১৩৩,unreadable
+scan,3824936.png,1,,202,,155,100,good,0.8,bengali,crop,contrast,১১-০৫১৪,uncertain
+typed,3825496.png,1,,118,,134,100,good,0.98,bengali,crop,upscale x1.2 > contrast,১১-০০১৩,readable
+scan,3825842.png,1,compressed,149,,159,100,good,0.82,bengali,crop,deblock(x1.43) > contrast,১৪-৯৪১১,uncertain
+typed,3828562.png,1,,134,,134,100,good,0.97,bengali,crop,upscale x1.2 > contrast,১১-১১২১,readable
+typed,3829350.png,1,,143,,127,94,good,0.96,bengali,crop,contrast,১১-০৮১৫,readable
+scan,3831216.png,1,,127,,157,100,good,0.04,bengali,crop,upscale x1.3 > contrast,১১-৪৬০৩,unreadable
+scan,3831581.png,1,,159,,157,100,good,0.0,bengali,crop,contrast,৯৫-৫৫৩৫,unreadable
+typed,3832777.png,1,,153,,136,100,good,0.93,bengali,crop,upscale x1.2 > contrast,১১-৩৪৮০,readable
+scan,3836491.png,1,,215,,148,100,good,,bengali,crop,upscale x1.1 > contrast,,unreadable
+scan,3838118.png,1,,123,,122,100,good,0.3,bengali,crop,contrast,৫১-৭০৮০,unreadable
+scan,3838327.png,1,,168,,131,99,good,0.84,bengali,crop,denoise(sigma=4.6) > upscale x1.1 > contrast,৫২-০৫৫৩,uncertain
+scan,3839926.png,1,,121,,160,100,good,0.16,bengali,crop,upscale x1.0 > contrast,১০-৪০৪১,unreadable
+typed,3841920.png,1,,133,,136,98,good,0.98,bengali,crop,upscale x1.2 > contrast,১১-২২০১,readable
+scan,3842560.png,1,,131,,141,100,good,0.32,bengali,crop,upscale x1.2 > contrast,০৭-৯০৩৪,unreadable
+scan,3856220.png,1,,115,,151,81,good,0.29,bengali,crop,upscale x1.1 > contrast,৫১-২১৪৫,unreadable
+typed,3867992.png,1,,118,,131,100,good,0.99,bengali,crop,upscale x1.3 > contrast,৫১-০৯২৬,readable
+scan,3868496.png,1,,217,,158,99,good,0.07,bengali,classical,denoise(sigma=6.0) > upscale x1.1 > contrast,১১-১৪১৪,unreadable
+scan,3871928.png,1,dark,115,,143,85,good,0.39,bengali,crop,low-light > upscale x1.1 > contrast,১৪-৬৯৩৩,unreadable
+scan,3876786.png,1,,133,,144,99,good,0.38,bengali,crop,upscale x1.1 > contrast,০৫-৫০১০,unreadable
+typed,3878193.png,1,,110,,158,96,good,0.99,bengali,crop,upscale x1.1 > contrast,৫১-২১৩২,readable
+typed,3880731.png,1,,144,,150,96,good,0.99,bengali,crop,contrast,৫১-২৩৪১,readable
+typed,3880964.png,1,,120,,133,100,good,0.97,bengali,crop,upscale x1.1 > contrast,৫১-৪১২২,readable
+scan,3884639.png,1,dark compressed,143,,160,100,good,0.31,bengali,crop,low-light > deblock(x1.14) > upscale x1.3 > contrast,১১-০০৫২,unreadable
+typed,3887404.png,1,,173,,154,99,good,0.97,bengali,crop,denoise(sigma=5.2) > contrast,২৪-৪০৩৩,readable
+typed,3890623.png,1,,124,,154,100,good,0.93,bengali,crop,upscale x1.1 > contrast,১১-৬৬৬৭,readable
+scan,3898734.png,1,,132,,132,100,good,,bengali,crop,upscale x1.3 > contrast,,unreadable
+scan,3904785.png,1,,110,,150,100,good,0.69,bengali,crop,upscale x1.7 > contrast,০৬-০৬১১,uncertain
+scan,3905286.png,1,,124,,146,100,good,0.02,bengali,crop,contrast,৬১-০১২০,unreadable
+typed,3906162.png,1,,102,,151,87,good,0.94,bengali,crop,upscale x1.1 > contrast,০৫-০৫১৩,readable
+scan,3910194.png,1,,130,,157,93,good,0.06,bengali,crop,upscale x1.3 > contrast,৫৫-০৭৩৫,unreadable
+typed,3910739.png,1,,162,,142,94,good,0.98,bengali,crop,upscale x1.2 > contrast,৮১-১৩৮৬,readable
+scan,3918003.png,1,,140,,148,100,good,,bengali,crop,upscale x1.1 > contrast,,unreadable
+scan,3922747.png,1,compressed,134,,125,89,good,0.84,bengali,crop,deblock(x1.19) > upscale x1.1 > contrast,১১-১০৯৬,uncertain
+scan,3923905.png,1,dark,132,,117,92,good,0.63,bengali,crop,low-light > upscale x1.3 > contrast,১১-০৭৬২,uncertain
+scan,3924660.png,1,,128,,141,98,good,0.58,bengali,crop,contrast,১১-২৭৬১,uncertain
+scan,3925375.png,1,,137,,159,100,good,0.71,bengali,crop,contrast,১১-০২৫২,uncertain
+scan,3928311.png,1,,125,,159,100,good,0.28,bengali,crop,upscale x1.3 > contrast,১৫-১০৮৩,unreadable
+scan,3931074.png,1,compressed,117,,145,94,good,0.2,bengali,crop,deblock(x1.18) > upscale x1.4 > contrast,০৫-০০১০,unreadable
+typed,3932719.png,1,,151,,133,99,good,0.98,bengali,crop,upscale x1.2 > contrast,১২-৯৩১৯,readable
+typed,3932744.png,1,,100,,147,96,good,0.97,bengali,crop,upscale x1.1 > contrast,৫১-২১৩১,readable
+typed,3934405.png,1,glare,165,,148,96,good,0.92,bengali,crop,glare > upscale x1.1 > contrast,৫১-২৬২১,readable
+typed,3934735.png,1,,123,,154,99,good,0.99,bengali,crop,upscale x1.3 > contrast,১১-০০৩৭,readable
+scan,3934812.png,1,,147,,139,99,good,0.66,bengali,crop,contrast,১১-৮২১৫,uncertain
+typed,3936087.png,1,,106,,128,100,good,0.98,bengali,crop,upscale x1.3 > contrast,১৩-৭৯০১,readable
+typed,3936557.png,1,,129,,155,100,good,0.98,bengali,crop,upscale x1.1 > contrast,১১-৬৭৭৯,readable
+scan,3936781.png,1,,132,,159,100,good,0.57,bengali,crop,upscale x1.3 > contrast,৫১-০২১০,uncertain
+typed,3939872.png,1,,134,,139,100,good,0.98,bengali,crop,contrast,১৩-৬১৯৮,readable
+typed,3940037.png,1,,120,,133,99,good,0.99,bengali,crop,upscale x1.1 > contrast,৫১-১৪৪৪,readable
+scan,3940750.png,1,,137,,159,100,good,0.02,bengali,crop,upscale x1.7 > contrast,৭৪-২৭৩০,unreadable
+scan,3941836.png,1,,151,,125,99,good,0.02,bengali,crop,upscale x1.0 > contrast,৫৫-১২৬৯,unreadable
+scan,3942672.png,1,compressed,116,,139,93,good,0.69,bengali,crop,deblock(x1.22) > upscale x1.2 > contrast,৮১-০০৭৪,uncertain
+scan,3943547.png,1,low_resolution blurry dark,137,,8,16,unreadable,0.0,bengali,learned,low-light > upscale x4.0 > contrast > sharpen,১৯-২১২২,unreadable
+scan,3944886.png,1,,208,,115,99,good,0.43,bengali,crop,denoise(sigma=6.1) > contrast,১১-৭১৮৯,unreadable
+scan,3947746.png,1,dark,139,,136,99,good,0.83,bengali,crop,low-light > upscale x1.2 > contrast,১১-১৭৩৮,uncertain
+typed,3949423.png,1,compressed,112,,153,100,good,0.98,bengali,crop,deblock(x1.39) > upscale x1.4 > contrast,১১-০১৭২,readable
+typed,3949843.png,1,,143,,160,97,good,0.95,bengali,crop,contrast,১১-১৫৭৩,readable
+typed,3950189.png,1,,116,,153,100,good,0.99,bengali,crop,upscale x1.1 > contrast,১১-১৪৭০,readable
+typed,3951268.png,1,,148,,158,99,good,0.98,bengali,crop,contrast,১১-৫৩১৬,readable
+scan,3955116.png,1,,144,,159,97,good,0.07,bengali,crop,upscale x1.3 > contrast,০৮-০১৪৩,unreadable
+scan,3957077.png,1,,141,,157,98,good,0.73,bengali,crop,upscale x1.3 > contrast,১১-০১৭৪,uncertain
+typed,3957846.png,1,,139,,128,100,good,0.99,bengali,crop,upscale x1.4 > contrast,১১-১৫৮৯,readable
+typed,3958960.png,1,,137,,147,100,good,0.97,bengali,crop,upscale x1.3 > contrast,১১-৩৬০৩,readable
+typed,3960067.png,1,,117,,127,100,good,0.99,bengali,crop,upscale x1.3 > contrast,১১-৭০৮৩,readable
+typed,3961068.png,1,,131,,142,100,good,0.94,bengali,crop,upscale x1.2 > contrast,১১-১৮৯৭,readable
+scan,3962618.png,1,,140,,154,100,good,0.21,bengali,crop,contrast,১২-৫০৯২,unreadable
+typed,3963817.png,1,,142,,133,100,good,0.99,bengali,crop,upscale x1.3 > contrast,১১-৬৮৮৩,readable
+scan,3966104.png,1,dark,141,,156,100,good,0.07,bengali,crop,low-light > contrast,৫৮-১০৮৩,unreadable
+scan,3971392.png,1,,125,,154,100,good,0.02,bengali,crop,upscale x1.1 > contrast,৬৬-৬৬৬৬,unreadable
+typed,3976525.png,1,,126,,150,100,good,0.98,bengali,crop,upscale x1.1 > contrast,১২-০৭০৬,readable
+typed,3988692.png,1,,113,,150,98,good,0.94,bengali,crop,upscale x1.1 > contrast,১১-২১৩৩,readable
+scan,3992272.png,1,,115,,145,100,good,0.9,bengali,crop,upscale x1.4 > contrast,১১-৮৫৯৯,uncertain
+scan,3996020.png,1,,125,,143,94,good,0.06,bengali,crop,upscale x1.2 > contrast,১৯-৭৭৭৭,unreadable
+typed,3996135.png,1,low_contrast,175,,145,74,good,0.97,bengali,crop,upscale x1.4 > contrast,২০-২৩১১,readable
+scan,3996201.png,1,,140,,147,98,good,0.04,bengali,crop,upscale x1.4 > contrast,৫৭-০২১০,unreadable
+typed,4046797.png,1,dark compressed,136,,147,91,good,0.98,bengali,crop,low-light > deblock(x1.18) > upscale x1.4 > contrast,৮১-১২০২,readable
+scan,4053334.png,1,compressed,119,,145,100,good,0.73,bengali,crop,deblock(x1.42) > upscale x1.4 > contrast,০৬-০২১০,uncertain
+scan,4053751.png,1,low_resolution blurry,129,,9,19,unreadable,0.0,bengali,learned,upscale x4.0 > contrast > sharpen,০৯-৪৬০৮,unreadable
+scan,4068352.png,1,,131,,151,100,good,0.12,bengali,crop,upscale x1.4 > contrast,১১-৬৭৯৮,unreadable
+scan,4071523.png,1,,140,,153,99,good,0.03,bengali,crop,contrast,১১-৭৬৯৬,unreadable
+typed,4074850.png,1,,114,,152,100,good,0.96,bengali,crop,contrast,১৫-১৪১০,readable
+typed,4096188.png,1,,151,,142,100,good,0.99,bengali,crop,upscale x1.2 > contrast,১১-১৯৬৪,readable
+typed,4096993.png,1,,118,,154,100,good,0.91,bengali,crop,upscale x1.3 > contrast,১১-৮৭২১,readable
+scan,4099361.png,1,,128,,157,100,good,0.81,bengali,crop,upscale x1.1 > contrast,২২-২৭৮৫,uncertain
+typed,4099423.png,1,,139,,152,94,good,0.99,bengali,crop,upscale x1.1 > contrast,১১-৫৩৯১,readable
+scan,4106802.png,1,,119,,155,100,good,,bengali,crop,upscale x1.2 > contrast,,unreadable
+scan,4107195.png,1,,104,,148,100,good,0.58,bengali,crop,upscale x1.4 > contrast,১১-৫১১২,uncertain
+typed,4111058.png,1,,138,,143,100,good,0.95,bengali,crop,upscale x1.1 > contrast,৮২-০০৭৪,readable
+scan,4129657.png,1,,114,,134,100,good,,bengali,crop,upscale x1.4 > contrast,,unreadable
+typed,4138803.png,1,,170,,154,100,good,0.96,bengali,crop,upscale x1.1 > contrast,১১-০১২৬,readable
+typed,4140533.png,1,,153,,149,92,good,0.99,bengali,crop,upscale x1.4 > contrast,১১-১৯২১,readable
+scan,4145343.png,1,,147,,140,99,good,0.42,bengali,crop,upscale x1.5 > contrast,১৫-৫১৪১,unreadable
+typed,4146821.png,1,,145,,139,96,good,0.99,bengali,crop,upscale x1.2 > contrast,৫১-২৭৫৬,readable
+typed,4148667.png,1,,134,,131,100,good,0.97,bengali,crop,upscale x1.3 > contrast,১৩-৩৮৬৪,readable
+scan,4155191.png,1,,123,,136,100,good,,bengali,crop,upscale x1.2 > contrast,,unreadable
+typed,4165423.png,1,,126,,122,100,good,0.95,bengali,crop,upscale x1.2 > contrast,৫১-২০৪৯,readable
+scan,4166471.png,1,compressed,136,,152,100,good,0.7,bengali,crop,deblock(x1.24) > upscale x1.1 > contrast,২২-০৭২০,uncertain
+typed,4170388.png,1,dark,175,,150,96,good,0.97,bengali,crop,low-light > upscale x1.1 > contrast,১১-০৬৩২,readable
+typed,4172348.png,1,,134,,162,100,good,0.91,bengali,crop,upscale x1.0 > contrast,১১-০০১৩,readable
+scan,4173032.png,1,,173,,144,100,good,0.44,bengali,crop,upscale x1.1 > contrast,১৫-৭০৪৪,unreadable
+scan,4174598.png,1,,142,,127,100,good,0.58,bengali,crop,upscale x1.3 > contrast,১১-২০৭৯,uncertain
+scan,4180314.png,1,,173,,117,100,good,0.11,bengali,learned+quad,upscale x1.1 > contrast,১১-১৪৭৩,unreadable
+scan,4183807.png,1,compressed,111,,159,89,good,0.75,bengali,crop,deblock(x1.19) > upscale x1.3 > contrast,১১-১৭৩২,uncertain
+scan,4183808.png,1,,142,,159,99,good,0.14,bengali,crop,upscale x1.0 > contrast,১১-১১৩৯,unreadable
+typed,4188269.png,1,,113,,150,100,good,0.98,bengali,crop,contrast,০৫-০০৩৪,readable
+scan,4191437.png,1,,143,,153,100,good,0.01,bengali,crop,upscale x1.4 > contrast,৫৫-৪৪৪৩,unreadable
+,4193979.png,0,,,no plate found,,,,,,,,,
+typed,4194619.png,1,compressed,145,,142,100,good,0.93,bengali,crop,deblock(x1.20) > contrast,০২-০৩৯৬,readable
+scan,4198205.png,1,,143,,152,100,good,0.75,bengali,crop,contrast,০৫-০২৩৯,uncertain
+scan,4198664.png,1,,108,,153,100,good,0.69,bengali,crop,upscale x1.1 > contrast,০৫-০১৯৭,uncertain
+scan,4198760.png,1,,134,,149,100,good,0.89,bengali,crop,contrast,১১-৩১২৩,uncertain
+typed,4204610.png,1,,155,,131,97,good,0.97,bengali,crop,contrast,৫২-২৫৪৬,readable
+scan,4206148.png,1,,158,,159,94,good,0.85,bengali,crop,contrast,১১-০৬০০,uncertain
+typed,4225971.png,1,compressed,114,,136,100,good,0.99,bengali,crop,deblock(x1.29) > upscale x1.2 > contrast,০৫-০৩৭০,readable
+scan,4257800.png,1,,143,,160,100,good,0.09,bengali,crop,upscale x1.3 > contrast,০৬-০৯৫৮,unreadable
+scan,4267915.png,1,compressed,115,,158,100,good,0.1,bengali,crop,deblock(x1.21) > upscale x1.1 > contrast,০৫-৫০৬০,unreadable
+scan,4270167.png,1,,133,,156,97,good,0.06,bengali,crop,upscale x1.3 > contrast,৮১-১৫৫১,unreadable
+scan,4287399.png,1,dark,156,,145,99,good,0.06,bengali,crop,low-light > contrast,৭৯-১৯৭৮,unreadable
+scan,4287845.png,1,,155,,136,100,good,0.73,bengali,crop,contrast,১১-০১০২,uncertain
+scan,4295646.png,1,compressed,151,,160,100,good,0.34,bengali,crop,deblock(x1.27) > upscale x1.3 > contrast,১১-০১৪৩,unreadable
+typed,4354636.png,1,,141,,136,100,good,0.99,bengali,crop,upscale x1.5 > contrast,১১-৪৪২৭,readable
+scan,4388468.png,1,compressed,145,,159,100,good,0.0,bengali,crop,deblock(x1.39) > upscale x1.3 > contrast,৫৯-৬৬৮৫,unreadable

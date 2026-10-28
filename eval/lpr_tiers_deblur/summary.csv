@@ -1,0 +1,5 @@
+﻿tier,images,labelled,exact_match_pct,digit_accuracy_pct,city_accuracy_pct,letter_accuracy_pct,called_readable,read_rate_pct,precision_when_readable_pct,labelled_readable
+easy,52,24,62.5,87.5,83.3,47.8,32,61.5,100.0,13
+medium,52,33,63.6,85.9,80.6,60.7,24,46.2,92.9,14
+extreme,51,26,61.5,88.5,90.9,55.0,17,33.3,90.0,10
+ALL,155,83,62.7,87.1,84.4,54.9,73,47.1,94.6,37
