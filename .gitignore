@@ -69,3 +69,9 @@ desktop.ini
 /eval/metrics.json
 /eval/new_samples_contact_sheet.jpg
 /eval/new_samples_metrics.json
+
+# training weights (about 41 MB): kept in the project for further tuning, not pushed
+/ocr/weights/**/*.pt
+
+# synthetic training plates (555 MB): kept in the project, not pushed
+/synthetic data/*.npz
