@@ -1,5 +1,7 @@
 # ocr - the learned (OCR) route
 
+**How it works in detail: [ARCHITECTURE.md](ARCHITECTURE.md)** (pipeline, the five models, decision rules, training and evaluation).
+
 Everything in this folder uses trained models. The OpenCV-only scan lives in [`../opencv`](../opencv/README.md);
 this route imports the classical pieces it shares (corner geometry, restoration, layout) from there.
 
@@ -34,10 +36,10 @@ has seen.
 ```bash
 docker build -f Dockerfile.ocr -t plate-ocr .
 docker run --rm -p 8001:8001 --cpus=4 -e WORKERS=2 -e ORT_INTRA_THREADS=2 plate-ocr
-curl -F file=@car.jpg http://localhost:8001/api/plate/scan       # GET /health, GET /api/plate/capabilities
+curl -F file=@car.jpg http://localhost:8001/api/plate/read       # GET /health, GET /api/plate/capabilities
 ```
 
-The YOLO detector and the plate OCR model are downloaded while the image is built, so the running container needs no
+The reader ONNX files are copied into the image and the YOLO detector (and the Latin plate OCR model) are downloaded while the image is built, so the running container needs no
 internet. CPU use is roughly `WORKERS x ORT_INTRA_THREADS` threads: keep it at or below the CPUs you give the
 container. Without Docker: `uvicorn ocr.server:app --port 8001 --workers 2`.
 
@@ -50,8 +52,8 @@ import cv2
 from ocr.pipeline import read_plate, render_report
 
 report = read_plate(cv2.imread("car.jpg"))     # YOLO (large frames) -> opencv scan -> readers
-report.text, report.verdict                      # digits the readers are not sure of are "?"; "readable|uncertain|unreadable"
-cv2.imwrite("result.png", render_report(report)) # cleaned plate + reading + confidence per digit
+report.text, report.verdict                      # "ঢাকা মেট্রো-ছ  ১১-২৭৮৯", "readable|uncertain|unreadable" (no confidence numbers)
+cv2.imwrite("result.png", render_report(report)) # cleaned plate + the reading + the verdict
 ```
 
 Two reader pairs run on every plate and the digits of the more confident one win (the first row is named by the ink reader, falling back to the relief reader when it is unsure; `TOP_RULE` in `pipeline.py`): the shipped **ink** readers (`bangla_row.onnx`,
@@ -70,3 +72,5 @@ python ocr/scripts/make_plain_label_page.py <folder>      # one HTML page to lab
 Training uses the GPU (`torch` CUDA); data generation uses the CPU (`GEN_PROCS` limits its processes). The top-row model knows
 19 city words (the plain "ঢাকা" was added); its class-letter head is weak (about 42% on synthetic plates), so the letter is
 shown only when it is confident. Thresholds in `pipeline.py` are heuristics, not calibrated on labelled embossed plates.
+
+**Continue tuning:** the training weights are in [`weights/`](weights/README.md) and `scripts/finetune_on_labels.py` retrains the readers on new labelled plates.

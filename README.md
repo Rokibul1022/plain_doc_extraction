@@ -163,7 +163,7 @@ mounting bolts and long rim lines, and stretches the contrast so each raised cha
 **outline** on white. Switch it on with `relief="force"`, the CLI flag `--relief force`, or the *Embossed (3D) plate*
 checkbox in the UI. `relief="auto"` only switches when the normal ink map is almost empty.
 
-More detail, module reference and the Python API: [`opencv/README.md`](opencv/README.md).
+More detail, module reference and the Python API: [`opencv/README.md`](opencv/README.md). **How every stage works: [`opencv/ARCHITECTURE.md`](opencv/ARCHITECTURE.md).**
 
 ---
 
@@ -180,7 +180,7 @@ More detail, module reference and the Python API: [`opencv/README.md`](opencv/RE
 | Typeset page | `typeset.py`, `textrender.py`, `fonts/` | clean typed page for reliable readings (HarfBuzz) |
 | Training / evaluation | `scripts/` | GPU training, cross-validation grouped by plate number, calibration, labelling page |
 
-Details: [`ocr/README.md`](ocr/README.md).
+Details: [`ocr/README.md`](ocr/README.md). **Pipeline, models, decision rules, training and evaluation: [`ocr/ARCHITECTURE.md`](ocr/ARCHITECTURE.md).**
 
 ---
 

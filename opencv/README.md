@@ -10,6 +10,8 @@ re-drawn as black characters on pure white paper.
 photo ──► 4 corners ──► straighten ──► clean-up ──► plain page
 ```
 
+**How it works in detail: [ARCHITECTURE.md](ARCHITECTURE.md)** (every stage, the constants, what was tried and rejected).
+
 ## Install
 
 ```bash
