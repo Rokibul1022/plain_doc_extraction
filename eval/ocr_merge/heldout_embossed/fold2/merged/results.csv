@@ -1,0 +1,4 @@
+﻿file,verdict,reader,top,letter,digits,reader_ms,truth,digits_right,exact,city_label,city_ok,letter_label,letter_ok
+Screenshot_10.png,uncertain,ink,ঢাকা,,১৪১৪৭৪,130.3,১৪১৪৭৪,6,1,ঢাকা,1,থ,0
+Screenshot_11.png,readable,ink,ঢাকা মেট্রো,চ,১৪১০০৬,89.5,১৪১০০৬,6,1,ঢাকা মেট্রো,1,ছ,0
+Screenshot_11 (1).png,readable,ink,ঢাকা মেট্রো,চ,১৪১০০৬,76.2,১৪১০০৬,6,1,ঢাকা মেট্রো,1,ছ,0

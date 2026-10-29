@@ -110,24 +110,28 @@ class BanglaRowReader:
             return RowReading()
         if self.view is not None:
             crops = [self.view(c) for c in crops]
-        p = self.probs([region(c, top, trim) for c in crops for top, trim in VIEWS])
-        decoded = [decode_probs(pi) for pi in p]
-        raw = [d[0] for d in decoded]
-        six = [(t, c) for t, c in decoded if len(t) == EXPECTED and len(c) == EXPECTED]
-        if not six:
-            return RowReading(raw=raw, n_views=len(decoded))
-        # per-position vote, each view weighted by its own confidence in that character
-        text, conf, alts = [], [], []
-        for i in range(EXPECTED):
-            tally: dict[str, float] = {}
-            for t, c in six:
-                tally[t[i]] = tally.get(t[i], 0.0) + c[i]
-            ch = max(tally, key=tally.get)
-            text.append(ch)
-            total = sum(tally.values()) or 1.0
-            alts.append([(k, v / total) for k, v in sorted(tally.items(), key=lambda kv: -kv[1])])
-            members = [c[i] for t, c in six if t[i] == ch]
-            conf.append(float(np.mean(members)) * len(members) / len(six))
-        final = "".join(text)
-        agree = sum(1 for t, _ in six if t == final) / len(decoded)
-        return RowReading(final, float(np.mean(conf)), conf, agree, len(decoded), raw, alts)
+        return vote(self.probs([region(c, top, trim) for c in crops for top, trim in VIEWS]))
+
+
+def vote(p: np.ndarray) -> RowReading:
+    """Combine the CTC probabilities of several views (V, T, 11) into one reading (per-position, confidence-weighted)."""
+    decoded = [decode_probs(pi) for pi in p]
+    raw = [d[0] for d in decoded]
+    six = [(t, c) for t, c in decoded if len(t) == EXPECTED and len(c) == EXPECTED]
+    if not six:
+        return RowReading(raw=raw, n_views=len(decoded))
+    # per-position vote, each view weighted by its own confidence in that character
+    text, conf, alts = [], [], []
+    for i in range(EXPECTED):
+        tally: dict[str, float] = {}
+        for t, c in six:
+            tally[t[i]] = tally.get(t[i], 0.0) + c[i]
+        ch = max(tally, key=tally.get)
+        text.append(ch)
+        total = sum(tally.values()) or 1.0
+        alts.append([(k, v / total) for k, v in sorted(tally.items(), key=lambda kv: -kv[1])])
+        members = [c[i] for t, c in six if t[i] == ch]
+        conf.append(float(np.mean(members)) * len(members) / len(six))
+    final = "".join(text)
+    agree = sum(1 for t, _ in six if t == final) / len(decoded)
+    return RowReading(final, float(np.mean(conf)), conf, agree, len(decoded), raw, alts)

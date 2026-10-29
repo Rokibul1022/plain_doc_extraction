@@ -75,3 +75,7 @@ desktop.ini
 
 # synthetic training plates (555 MB): kept in the project, not pushed
 /synthetic data/*.npz
+
+# merged reader: training weights, held-out models, the cached scans of the labelled (real) plates - local only
+/ocr_merge/weights/*
+!/ocr_merge/weights/README.md

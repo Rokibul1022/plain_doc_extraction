@@ -1,0 +1,118 @@
+{
+ "lpr": {
+  "separate": {
+   "images": 152,
+   "labelled": 81,
+   "digits": "451/486",
+   "whole_number": "58/81",
+   "city": "75/75",
+   "letter_shown_right": "65/69",
+   "verdicts": {
+    "readable": 95,
+    "uncertain": 54,
+    "unreadable": 3
+   },
+   "readable_and_right": "50/52",
+   "reader_ms_median": 148.2,
+   "scan_s_median": 2.14
+  },
+  "merged": {
+   "images": 152,
+   "labelled": 81,
+   "digits": "486/486",
+   "whole_number": "81/81",
+   "city": "75/75",
+   "letter_shown_right": "65/69",
+   "verdicts": {
+    "readable": 131,
+    "uncertain": 20,
+    "unreadable": 1
+   },
+   "readable_and_right": "80/80",
+   "reader_ms_median": 108.1,
+   "scan_s_median": 2.14
+  }
+ },
+ "new3d": {
+  "separate": {
+   "images": 10,
+   "labelled": 10,
+   "digits": "60/60",
+   "whole_number": "10/10",
+   "city": "10/10",
+   "letter_shown_right": "10/10",
+   "verdicts": {
+    "readable": 10,
+    "uncertain": 0,
+    "unreadable": 0
+   },
+   "readable_and_right": "10/10",
+   "reader_ms_median": 108.8,
+   "scan_s_median": 1.96
+  },
+  "merged": {
+   "images": 10,
+   "labelled": 10,
+   "digits": "60/60",
+   "whole_number": "10/10",
+   "city": "10/10",
+   "letter_shown_right": "10/10",
+   "verdicts": {
+    "readable": 10,
+    "uncertain": 0,
+    "unreadable": 0
+   },
+   "readable_and_right": "10/10",
+   "reader_ms_median": 77.7,
+   "scan_s_median": 1.96
+  }
+ },
+ "heldout_extreme": {
+  "separate": {
+   "images": 26,
+   "labelled": 26,
+   "digits": "136/156",
+   "whole_number": "17/26",
+   "city": "20/22",
+   "letter_shown_right": "7/20",
+   "verdicts": {
+    "readable": 12,
+    "uncertain": 12,
+    "unreadable": 2
+   },
+   "readable_and_right": "12/12",
+   "reader_ms_median": 106.8,
+   "scan_s_median": 1.42
+  },
+  "merged": {
+   "images": 26,
+   "labelled": 26,
+   "digits": "137/156",
+   "whole_number": "17/26",
+   "city": "20/22",
+   "letter_shown_right": "6/20",
+   "verdicts": {
+    "readable": 14,
+    "uncertain": 11,
+    "unreadable": 1
+   },
+   "readable_and_right": "14/14",
+   "reader_ms_median": 66.7,
+   "scan_s_median": 1.42
+  }
+ },
+ "heldout_embossed": {
+  "separate": {
+   "digits": "57/60",
+   "whole_number": "8/10",
+   "city": "9/10",
+   "letter_shown_right": "3/10"
+  },
+  "merged": {
+   "digits": "56/60",
+   "whole_number": "8/10",
+   "city": "9/10",
+   "letter_shown_right": "2/10"
+  }
+ }
+}

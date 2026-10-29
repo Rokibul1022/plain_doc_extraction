@@ -1,0 +1,83 @@
+{
+ "images": 30,
+ "cpu_threads": 12,
+ "ORT_INTRA_THREADS": "default",
+ "ORT_ALLOW_SPINNING": "0",
+ "separate": {
+  "mode": "separate",
+  "model_files": [
+   "ocr/bangla_row.onnx",
+   "ocr/bangla_top.onnx",
+   "ocr/bangla_row_relief.onnx",
+   "ocr/bangla_top_relief.onnx"
+  ],
+  "disk_mb": 20.31,
+  "params": 5317756,
+  "onnx_sessions": 4,
+  "calls_per_plate": 4,
+  "load_s": 0.384,
+  "memory_mb": {
+   "start": 34.3,
+   "after_scan": 66.7,
+   "readers_loaded": 144.7,
+   "readers_delta": 77.9,
+   "after_reading": 163.2,
+   "peak": 190.4
+  },
+  "reader_ms": {
+   "median": 48.0,
+   "p90": 56.7,
+   "mean": 48.6,
+   "n": 90
+  },
+  "end_to_end_s": {
+   "median": 1.74,
+   "p90": 3.23,
+   "mean": 2.06,
+   "n": 30
+  },
+  "end_to_end_without_page_s": {
+   "median": 1.29,
+   "p90": 1.56,
+   "mean": 1.26,
+   "n": 30
+  }
+ },
+ "merged": {
+  "mode": "merged",
+  "model_files": [
+   "ocr_merge/plate_net.onnx"
+  ],
+  "disk_mb": 5.88,
+  "params": 1537790,
+  "onnx_sessions": 1,
+  "calls_per_plate": 1,
+  "load_s": 0.242,
+  "memory_mb": {
+   "start": 34.3,
+   "after_scan": 66.7,
+   "readers_loaded": 142.4,
+   "readers_delta": 75.7,
+   "after_reading": 160.8,
+   "peak": 193.3
+  },
+  "reader_ms": {
+   "median": 57.1,
+   "p90": 65.4,
+   "mean": 55.0,
+   "n": 90
+  },
+  "end_to_end_s": {
+   "median": 2.24,
+   "p90": 3.76,
+   "mean": 2.3,
+   "n": 30
+  },
+  "end_to_end_without_page_s": {
+   "median": 1.26,
+   "p90": 1.52,
+   "mean": 1.24,
+   "n": 30
+  }
+ }
+}

@@ -72,16 +72,21 @@ class BanglaTopReader:
             crops = [self.view(c) for c in crops]
         x = np.stack([to_top_region(c) for c in crops]).astype(np.float32)[:, None] / 255.0
         city_logits, letter_logits = self._sess.run(None, {"x": x})
+        return from_logits(city_logits, letter_logits, city_min, letter_min)
 
-        def avg_softmax(z):
-            e = np.exp(z - z.max(1, keepdims=True))
-            return (e / e.sum(1, keepdims=True)).mean(0)
 
-        pc, pl = avg_softmax(city_logits), avg_softmax(letter_logits)
-        ci, li = int(pc.argmax()), int(pl.argmax())
-        r = TopReading(CITY_WORDS[ci], LETTERS[li], float(pc[ci]), float(pl[li]))
-        if r.city_conf < city_min:
-            return TopReading()
-        if r.letter_conf < letter_min:
-            r.letter, r.letter_conf = "", 0.0  # city word is reliable, the single letter is not
-        return r
+def from_logits(city_logits: np.ndarray, letter_logits: np.ndarray, city_min: float, letter_min: float) -> TopReading:
+    """Average the softmax of several views and apply the reliability cut-offs."""
+
+    def avg_softmax(z):
+        e = np.exp(z - z.max(1, keepdims=True))
+        return (e / e.sum(1, keepdims=True)).mean(0)
+
+    pc, pl = avg_softmax(city_logits), avg_softmax(letter_logits)
+    ci, li = int(pc.argmax()), int(pl.argmax())
+    r = TopReading(CITY_WORDS[ci], LETTERS[li], float(pc[ci]), float(pl[li]))
+    if r.city_conf < city_min:
+        return TopReading()
+    if r.letter_conf < letter_min:
+        r.letter, r.letter_conf = "", 0.0  # city word is reliable, the single letter is not
+    return r

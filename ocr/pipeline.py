@@ -156,7 +156,11 @@ def read_plate(img: np.ndarray, force_mode: str | None = None) -> PlateReport:
     crop = locate_plate(img)
     r = cv_scan(crop, relief="off", make_page=False)  # corners, straighten, restore (OpenCV only); the page comes later
     views = [r.rectified, r.restored]
-    cands = {m: _candidate(m, views) for m in ("ink", "relief")}
+    return build_report(r, {m: _candidate(m, views) for m in ("ink", "relief")}, force_mode)
+
+
+def build_report(r, cands: dict, force_mode: str | None = None) -> PlateReport:
+    """Pick the reading from the ink and relief candidates of one scanned plate (shared with ocr_merge)."""
     avail = {m: c for m, c in cands.items() if c is not None}
     if force_mode in avail:
         best = avail[force_mode]
