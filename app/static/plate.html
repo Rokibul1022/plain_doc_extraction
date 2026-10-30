@@ -38,6 +38,7 @@
       <button class="step-tab active" id="tabImage"><span class="step-num">1</span><span>Image</span></button>
       <button class="step-tab" id="tabVideo"><span class="step-num">2</span><span>Video</span></button>
       <button class="step-tab" id="tabOpencv"><span class="step-num">3</span><span>OpenCV</span></button>
+      <button class="step-tab" id="tabMerge"><span class="step-num">4</span><span>OCR Merge</span></button>
     </div>
   </nav>
 
@@ -90,10 +91,24 @@
       </div>
       <div id="opencvResults"></div>
     </section>
+    <!-- OCR MERGE MODE -->
+    <section id="mergeMode" style="display:none">
+      <div class="dropzone-card plate-drop" id="dropMerge">
+        <input type="file" id="fileMerge" accept="image/*" multiple style="display:none">
+        <div class="dropzone-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+        <h2 class="dropzone-title">Drop CCTV frames or car photos (merged reader)</h2>
+        <p class="dropzone-desc">The same pipeline as the Image tab (YOLO, straighten, clean), but the four readers are merged into one model: one call per plate.</p>
+        <p class="dropzone-desc" id="mergeInfo">loading the model…</p>
+        <label class="cv-opt" title="Force the embossed-plate view (characters stamped in the plate colour, no ink)"><input type="checkbox" id="mergeRelief"> Embossed (3D) plate</label>
+        <button class="btn btn-primary" id="pickMerge">Select images</button>
+      </div>
+      <div class="card-actions" id="mergeTools" style="display:none"><button class="btn btn-secondary btn-sm" id="mergeCsv">Download results (CSV)</button><span class="quality-line" id="mergeCount"></span></div>
+      <div id="mergeResults"></div>
+    </section>
   </main>
 
   <div id="toastContainer"></div>
-  <script src="/static/plate.js?v=3"></script>
+  <script src="/static/plate.js?v=5"></script>
   <script src="/opencv-static/opencv.js?v=2"></script>
 </body>
 </html>

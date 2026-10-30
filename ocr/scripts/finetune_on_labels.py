@@ -79,7 +79,7 @@ def main() -> None:
         digits = normalize_digits(r["digits"])
         city, letter = (r.get("city") or "").strip(), (r.get("letter") or "").strip()
         ci = CITY_WORDS.index(city) if city in CITY_WORDS else -1
-        li = LETTERS.index(letter) if letter in LETTERS else -1
+        li = LETTERS.index(letter) if len(letter) == 1 and letter in LETTERS else -1  # ("" in LETTERS is True: a blank must not become letter 0)
         for c in (s.rectified, s.restored):
             v = view(c)
             for top, trim in VIEWS:

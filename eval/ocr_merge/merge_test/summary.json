@@ -1,0 +1,83 @@
+{
+ "folder": "merge_test",
+ "images": 50,
+ "labelled": 50,
+ "device": "cuda (NVIDIA GeForce RTX 2070)",
+ "gpu_memory_mb": 5.9,
+ "merged": {
+  "images": 50,
+  "labelled": 50,
+  "digits": "269/300",
+  "whole_number": "37/50",
+  "city": "38/48",
+  "letter_shown_right": "23/47",
+  "verdicts": {
+   "readable": 35,
+   "uncertain": 14,
+   "unreadable": 1
+  },
+  "readable_and_right": "32/35",
+  "reader_ms_median": 66.0,
+  "scan_s_median": 1.12
+ },
+ "separate": {
+  "images": 50,
+  "labelled": 50,
+  "digits": "262/300",
+  "whole_number": "33/50",
+  "city": "34/48",
+  "letter_shown_right": "17/47",
+  "verdicts": {
+   "readable": 32,
+   "uncertain": 15,
+   "unreadable": 3
+  },
+  "readable_and_right": "28/32",
+  "reader_ms_median": 78.5,
+  "scan_s_median": 1.12
+ },
+ "agreement": {
+  "gpu_vs_cpu_onnx_same_reading": "50/50",
+  "merged_vs_separate_same_digits": "33/50"
+ },
+ "reader_ms_median_in_this_run": {
+  "merged": 66.0,
+  "separate_cpu": 78.5
+ },
+ "accuracy": {
+  "all_labelled": {
+   "plates": 50,
+   "digits": "269/300",
+   "whole_number": "37/50"
+  },
+  "number_in_training_labels": {
+   "plates": 6,
+   "digits": "35/36",
+   "whole_number": "5/6"
+  },
+  "truly_unseen": {
+   "plates": 44,
+   "digits": "234/264",
+   "whole_number": "32/44"
+  },
+  "by_verdict": {
+   "readable": {
+    "plates": 35,
+    "digits": "206/210",
+    "whole_number": "32/35"
+   },
+   "uncertain": {
+    "plates": 14,
+    "digits": "63/84",
+    "whole_number": "5/14"
+   },
+   "unreadable": {
+    "plates": 1,
+    "digits": "0/6",
+    "whole_number": "0/1"
+   }
+  },
+  "city": "38/48",
+  "letter_shown_right": "23/47"
+ }
+}

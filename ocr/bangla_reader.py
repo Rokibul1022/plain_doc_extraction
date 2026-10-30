@@ -113,9 +113,10 @@ class BanglaRowReader:
         return vote(self.probs([region(c, top, trim) for c in crops for top, trim in VIEWS]))
 
 
-def vote(p: np.ndarray) -> RowReading:
-    """Combine the CTC probabilities of several views (V, T, 11) into one reading (per-position, confidence-weighted)."""
-    decoded = [decode_probs(pi) for pi in p]
+def vote(p: np.ndarray, decode=None) -> RowReading:
+    """Combine the CTC probabilities of several views (V, T, 11) into one reading (per-position, confidence-weighted).
+    `decode` (optional) maps the whole batch to [(digits, per-digit confidence)]; the default is greedy `decode_probs` per view."""
+    decoded = decode(p) if decode else [decode_probs(pi) for pi in p]
     raw = [d[0] for d in decoded]
     six = [(t, c) for t, c in decoded if len(t) == EXPECTED and len(c) == EXPECTED]
     if not six:

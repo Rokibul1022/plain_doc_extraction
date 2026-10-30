@@ -33,8 +33,8 @@ from ocr_merge.model import N_CLASSES, PlateNet, export  # noqa: E402
 from opencv.relief import relief_view  # noqa: E402
 
 SYN = ROOT / "synthetic data"
-LABELS = [ROOT / "labels.csv", ROOT / "labels_embossed10.csv"]
-FOLDERS = [ROOT / "LPR_200 1st", ROOT / "LPR catagory", ROOT / "new samples+3d"]
+LABELS = [ROOT / "labels.csv", ROOT / "labels_embossed10.csv", ROOT / "50new_label.csv"]
+FOLDERS = [ROOT / "LPR_200 1st", ROOT / "LPR catagory", ROOT / "new samples+3d", ROOT / "merge_test"]
 EXT = {".png", ".jpg", ".jpeg", ".bmp", ".webp"}
 EVAL_N = 300  # the last plates of every synthetic set are kept out of training for the progress check
 
@@ -48,34 +48,43 @@ def shifted(c: np.ndarray, s: float) -> np.ndarray:
     return c
 
 
+def letter_index(letter: str) -> int:
+    """Index of a single known class letter, else -1 (blank, or something that is not one letter: `"" in LETTERS` is True)."""
+    letter = (letter or "").strip()
+    return LETTERS.index(letter) if len(letter) == 1 and letter in LETTERS else -1
+
+
 def labelled_plates(cache: Path) -> dict:
-    """{file: {digits, city, letter, crops}} for every labelled photo; the OpenCV scan is cached (it is the slow part)."""
-    if cache.exists():
-        return pickle.load(open(cache, "rb"))
+    """{file: {digits, city, letter, crops}} for every labelled photo. The OpenCV scan is cached (it is the slow part) and only
+    photos that are not in the cache yet are scanned; the labels are re-read from the CSVs every time."""
     from opencv.scan import scan
 
+    plates = pickle.load(open(cache, "rb")) if cache.exists() else {}
     paths = {}
     for folder in FOLDERS:
         for p in folder.rglob("*"):
             if p.suffix.lower() in EXT:
                 paths.setdefault(p.name, p)
-    plates = {}
+    added, seen = 0, set()
     for lab in LABELS:
         for r in csv.DictReader(open(lab, encoding="utf-8-sig")):
             digits = normalize_digits(r.get("digits") or "")
-            if len(digits) != 6 or r.get("status", "labelled") == "unreadable" or r["file"] not in paths or r["file"] in plates:
+            if len(digits) != 6 or r.get("status", "labelled") == "unreadable" or r["file"] not in paths or r["file"] in seen:
+                continue
+            seen.add(r["file"])
+            city = (r.get("city") or "").strip()
+            fields = {"digits": digits, "city": CITY_WORDS.index(city) if city in CITY_WORDS else -1, "letter": letter_index(r.get("letter"))}
+            if r["file"] in plates:
+                plates[r["file"]].update(fields)
                 continue
             s = scan(cv2.imread(str(paths[r["file"]])), relief="off", make_page=False)
-            city, letter = (r.get("city") or "").strip(), (r.get("letter") or "").strip()
-            plates[r["file"]] = {"digits": digits, "city": CITY_WORDS.index(city) if city in CITY_WORDS else -1,
-                                 "letter": LETTERS.index(letter) if letter in LETTERS else -1, "crops": [s.rectified, s.restored]}
-            print(f"  scanned {len(plates)}", end="\r", flush=True)
-    cache.parent.mkdir(parents=True, exist_ok=True)
+            plates[r["file"]] = {**fields, "crops": [s.rectified, s.restored]}
+            added += 1
     pickle.dump(plates, open(cache, "wb"))
     return plates
 
 
-def real_arrays(plates: dict, files: list[str]):
+def real_arrays(plates: dict, files: list[str], views=VIEWS, shifts=(-0.03, 0.0, 0.03)):
     """Training views of the real plates, in both looks (ink and relief_view): rows (x, y) and tops (x, city, letter)."""
     xr, yr, xt, ct, lt = [], [], [], [], []
     for f in files:
@@ -83,10 +92,10 @@ def real_arrays(plates: dict, files: list[str]):
         for c in p["crops"]:
             for look in (lambda v: v, relief_view):
                 v = look(c)
-                for top, trim in VIEWS:
+                for top, trim in views:
                     xr.append(region(v, top, trim))
                     yr.append([DIGITS.index(ch) for ch in p["digits"]])
-                for sh in (-0.03, 0.0, 0.03):
+                for sh in shifts:
                     xt.append(to_top_region(look(shifted(c, sh))))
                     ct.append(p["city"])
                     lt.append(p["letter"])
@@ -103,12 +112,18 @@ def main() -> None:
     ap.add_argument("--real-frac", type=float, default=0.35)
     ap.add_argument("--holdout", default="", help="comma separated photo names kept out of training (and their twins)")
     ap.add_argument("--holdout-csv", action="append", default=[], help="CSV whose `file` column is kept out of training")
+    ap.add_argument("--train-views", default="6", help="digit-row views per real crop used for training (ocr_merge/views.py)")
+    ap.add_argument("--top-shifts", type=int, default=3, help="vertical shifts of each real top-row crop (3 = -0.03, 0, +0.03)")
+    ap.add_argument("--fold", type=int, help="hold out this fold of the grouped k-fold (see ocr_merge/cv.py)")
+    ap.add_argument("--folds", type=int, default=5)
+    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--ema", type=float, default=0.0, help="keep an exponential moving average of the weights (e.g. 0.998) and save that")
     ap.add_argument("--cache", default=str(ROOT / "ocr_merge" / "weights" / "real_plates.pkl"))
     ap.add_argument("--save", required=True)
     ap.add_argument("--onnx-out")
     a = ap.parse_args()
 
-    torch.manual_seed(0)
+    torch.manual_seed(a.seed)
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("training device:", dev, flush=True)
     model = PlateNet()
@@ -129,18 +144,25 @@ def main() -> None:
     if a.real:
         plates = labelled_plates(Path(a.cache))
         held = {x.strip() for x in a.holdout.split(",") if x.strip()}
+        if a.fold is not None:
+            from ocr_merge.cv import folds
+
+            held |= set(folds(plates, a.folds)[a.fold])
         for hc in a.holdout_csv:
             held |= {r["file"] for r in csv.DictReader(open(hc, encoding="utf-8-sig"))}
         held_numbers = {plates[f]["digits"] for f in held if f in plates}
         train = [f for f in plates if f not in held and plates[f]["digits"] not in held_numbers]
         print(f"{len(plates)} labelled plates | {len(held)} held out | training on {len(train)}", flush=True)
-        real = [torch.from_numpy(v).to(dev) for v in real_arrays(plates, train)]
+        from ocr_merge.views import VIEW_SETS
+
+        shifts = tuple(np.round(np.linspace(-0.03 * (a.top_shifts // 2), 0.03 * (a.top_shifts // 2), a.top_shifts), 3)) if a.top_shifts > 1 else (0.0,)
+        real = [torch.from_numpy(v).to(dev) for v in real_arrays(plates, train, VIEW_SETS[a.train_views], shifts)]
         print(f"real views: {len(real[1])} digit-row, {len(real[3])} top-row", flush=True)
 
     opt = torch.optim.AdamW(model.parameters(), lr=a.lr, weight_decay=1e-4)
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=a.lr, total_steps=a.steps, pct_start=0.1)
     ctc = nn.CTCLoss(blank=N_CLASSES - 1, zero_infinity=True)
-    g = torch.Generator(device=dev).manual_seed(7)
+    g = torch.Generator(device=dev).manual_seed(7 + a.seed)
 
     def photometric(x: torch.Tensor) -> torch.Tensor:
         k = x.shape[0]
@@ -220,6 +242,7 @@ def main() -> None:
         return res
 
     model.train()
+    ema = {k: v.detach().clone() for k, v in model.state_dict().items()} if a.ema else None
     t0, run = time.time(), 0.0
     for step in range(1, a.steps + 1):
         xr, yr = batch_rows(a.batch)
@@ -233,11 +256,20 @@ def main() -> None:
         nn.utils.clip_grad_norm_(model.parameters(), 5.0)
         opt.step()
         sched.step()
+        if ema is not None:
+            with torch.no_grad():
+                for k, v in model.state_dict().items():
+                    if v.dtype.is_floating_point:
+                        ema[k].mul_(a.ema).add_(v.detach(), alpha=1 - a.ema)
+                    else:
+                        ema[k].copy_(v)
         run = 0.98 * run + 0.02 * loss.item() if step > 1 else loss.item()
         if step % 500 == 0 or step == a.steps:
             e = evaluate()
             print(f"step {step:5d} loss {run:.3f} | synthetic ink: digits {e[0]:.3f} city {e[1]:.3f} letter {e[2]:.3f}"
                   f" | embossed: digits {e[3]:.3f} city {e[4]:.3f} letter {e[5]:.3f} | {time.time() - t0:.0f}s", flush=True)
+    if ema is not None:
+        model.load_state_dict(ema)
     Path(a.save).parent.mkdir(parents=True, exist_ok=True)
     torch.save({k: v.cpu() for k, v in model.state_dict().items()}, a.save)
     if a.onnx_out:

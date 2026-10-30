@@ -1,5 +1,7 @@
 # Merged reader (`ocr_merge/`) vs. the four separate readers
 
+> **Update:** the sections below measure the first merged model (v1). The latest model (v2: label fix, class priors, 20 views + a denser re-read of doubtful plates, trained on 171 plates) is evaluated in [cv171/README.md](cv171/README.md): 91.9 % of digits and 72.5 % of whole numbers on plates it never saw (v1 recipe on the same folds: 89.7 % / 66.1 %).
+
 The four Bengali readers (ink digit row, ink top row, embossed digit row, embossed top row) were merged into one network,
 **PlateNet** (`ocr_merge/plate_net.onnx`): one shared CNN, a CTC digit head and a city/letter head, reading both the ink look
 and the embossed (`relief_view`) look. One ONNX call per plate instead of four. YOLO and the OpenCV stage are unchanged; the

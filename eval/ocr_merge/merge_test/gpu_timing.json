@@ -1,0 +1,15 @@
+{
+ "plates": 20,
+ "cpu_onnx": {
+  "median_ms": 70.5,
+  "p90_ms": 77.3,
+  "n": 60
+ },
+ "gpu_device": "cuda (NVIDIA GeForce RTX 2070)",
+ "gpu_torch": {
+  "median_ms": 18.4,
+  "p90_ms": 21.5,
+  "n": 60
+ },
+ "speedup": 3.8
+}

@@ -39,14 +39,15 @@
   });
 
   // ---------- tabs
+  const MODES = { image: "imageMode", video: "videoMode", opencv: "opencvMode", merge: "mergeMode" };
+  const TABS = { image: "tabImage", video: "tabVideo", opencv: "tabOpencv", merge: "tabMerge" };
   function setMode(mode) {
-    $("imageMode").style.display = mode === "image" ? "" : "none";
-    $("videoMode").style.display = mode === "video" ? "" : "none";
-    $("tabImage").classList.toggle("active", mode === "image");
-    $("tabVideo").classList.toggle("active", mode === "video");
-    $("opencvMode").style.display = mode === "opencv" ? "" : "none";
-    $("tabOpencv").classList.toggle("active", mode === "opencv");
+    Object.keys(MODES).forEach((m) => {
+      $(MODES[m]).style.display = m === mode ? "" : "none";
+      $(TABS[m]).classList.toggle("active", m === mode);
+    });
   }
+  $("tabMerge").addEventListener("click", () => setMode("merge"));
   $("tabOpencv").addEventListener("click", () => setMode("opencv"));
   $("tabImage").addEventListener("click", () => setMode("image"));
   $("tabVideo").addEventListener("click", () => setMode("video"));
@@ -194,7 +195,7 @@
   function readCard(d) {
     const card = el("div", "plate-card");
     const head = el("div", "plate-head");
-    head.appendChild(el("strong", "", d.mode === "relief" ? "Embossed plate reader" : "Plate reader"));
+    head.appendChild(el("strong", "", d.model === "merged" ? "Merged reader" + (d.mode === "relief" ? " · embossed view" : "") : d.mode === "relief" ? "Embossed plate reader" : "Plate reader"));
     head.appendChild(el("span", `verdict ${d.verdict}`, VERDICT_TEXT[d.verdict] || d.verdict));
     card.appendChild(head);
     const top = d.letter ? `${d.top}-${d.letter}` : d.top;
@@ -202,6 +203,10 @@
     card.appendChild(el("div", "plate-text bn", d.number));
     const chipsEl = el("div", "chips");
     chipsEl.appendChild(el("span", "chip fix", `${d.mode} reader`));
+    if (d.model === "merged") {
+      chipsEl.appendChild(el("span", "chip fix", `${d.device && d.device.startsWith("cuda") ? "GPU" : "CPU"} · ${d.views} views`));
+      if (d.retried) chipsEl.appendChild(el("span", "chip warn", "re-read with more views (first read was not readable)"));
+    }
     chipsEl.appendChild(el("span", "chip fix", `corners: ${d.corner_method}`));
     card.appendChild(chipsEl);
     const names = [["result", "Result"], ["page", d.mode === "relief" ? "Relief outlines" : "Plain page"], ["straight", "Straightened"], ["original", "Original + corners"]];
@@ -227,24 +232,25 @@
     return card;
   }
 
-  async function scanImage(file) {
+  async function scanImage(file, api = "/api/plate/read", resultsId = "imageResults", reliefBox = "embossedRead") {
     const block = el("div");
     block.appendChild(el("div", "file-title", file.name));
     const status = el("div", "no-plates");
     status.appendChild(el("span", "spinner-inline"));
     status.appendChild(document.createTextNode("Reading…"));
     block.appendChild(status);
-    $("imageResults").prepend(block);
+    $(resultsId).prepend(block);
 
     const fd = new FormData();
     fd.append("file", file);
-    fd.append("mode", $("embossedRead").checked ? "relief" : "auto");
+    fd.append("mode", $(reliefBox).checked ? "relief" : "auto");
     try {
-      const res = await fetch("/api/plate/read", { method: "POST", body: fd });
+      const res = await fetch(api, { method: "POST", body: fd });
       if (!res.ok) throw new Error((await res.json()).detail || `HTTP ${res.status}`);
       const data = await res.json();
       status.remove();
       block.appendChild(readCard(data));
+      if (data.model === "merged") addMergeRow(file.name, data);
     } catch (err) {
       status.textContent = `Error: ${err.message}`;
       toast(err.message, "error");
@@ -256,6 +262,35 @@
     $("dropImage").classList.add("compact");
     for (const f of files) await scanImage(f);
   });
+
+  // ---------- merged-reader mode (same card, /api/merge/read)
+  const mergeRows = [];
+  function addMergeRow(name, d) {
+    mergeRows.push([name, d.top, d.letter, d.digits, d.number, d.verdict, d.mode, d.retried ? "yes" : "no", d.device, d.elapsed_s]);
+    $("mergeTools").style.display = "";
+    $("mergeCount").textContent = `${mergeRows.length} plate(s) read`;
+  }
+  $("mergeCsv").addEventListener("click", () => {
+    const q = (v) => `"${String(v).replace(/"/g, '""')}"`;
+    const head = ["file", "city", "letter", "digits", "number", "verdict", "reader", "re-read", "device", "seconds"];
+    const blob = new Blob(["\ufeff" + [head, ...mergeRows].map((r) => r.map(q).join(",")).join("\r\n")], { type: "text/csv;charset=utf-8" });
+    const a = el("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "ocr_merge_results.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  });
+  document.querySelector("#dropMerge .cv-opt").addEventListener("click", (e) => e.stopPropagation());
+  wireDrop($("dropMerge"), $("fileMerge"), $("pickMerge"), async (files) => {
+    $("dropMerge").classList.add("compact");
+    for (const f of files) await scanImage(f, "/api/merge/read", "mergeResults", "mergeRelief");
+  });
+  fetch("/api/merge/capabilities").then((r) => r.json()).then((c) => {
+    $("mergeInfo").textContent = c.available
+      ? `${c.model_mb} MB model on ${c.device} · ${c.views} views per crop` + (c.retry_views ? `, doubtful plates re-read with ${c.retry_views}` : "") + ` · class priors ${c.priors ? "on" : "off"}`
+      : "model not found (ocr_merge/plate_net.onnx).";
+  }).catch(() => { $("mergeInfo").textContent = "server offline."; });
 
   // ---------- video mode
   async function scanVideo(file) {

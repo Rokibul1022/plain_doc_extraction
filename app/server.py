@@ -1,4 +1,5 @@
-"""FastAPI web app: serves the plate UI and mounts the OCR route (/api/plate/*) and the OpenCV route (/api/opencv/*).
+"""FastAPI web app: serves the plate UI and mounts the OCR route (/api/plate/*), the merged-reader route (/api/merge/*)
+and the OpenCV route (/api/opencv/*).
 
     python run.py                                        # opens http://127.0.0.1:8000
     uvicorn app.server:app --host 0.0.0.0 --port 8000
@@ -15,6 +16,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from ocr.api import router as ocr_router
+from ocr_merge.api import router as merge_router
 from opencv.api import router as opencv_router
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -46,6 +48,7 @@ def create_app() -> FastAPI:
         return FileResponse(page, headers=NO_CACHE)
 
     app.include_router(ocr_router)
+    app.include_router(merge_router)
     app.include_router(opencv_router)
     app.mount("/static", StaticFiles(directory=STATIC), name="static")
     app.mount("/opencv-static", StaticFiles(directory=ROOT / "opencv" / "static"), name="opencv-static")

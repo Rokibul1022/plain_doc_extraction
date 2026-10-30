@@ -2,6 +2,7 @@
 *
 !opencv
 !ocr
+!ocr_merge
 !app
 !run.py
 !requirements.txt
@@ -10,3 +11,5 @@
 opencv/tests
 opencv/scripts
 ocr/scripts
+ocr_merge/scripts
+ocr_merge/weights

@@ -59,8 +59,11 @@ def scanned(p: Path):
 
 def read(pipe: str, r):
     t = time.perf_counter()
+    if pipe == "merged":  # the same code the app runs (views, class priors, denser re-read of doubtful plates)
+        rep = mer.read_scan(r)
+        return rep, time.perf_counter() - t
     views = [r.rectified, r.restored]
-    cands = {m: sep._candidate(m, views) for m in ("ink", "relief")} if pipe == "separate" else mer.reader().candidates(views)
+    cands = {m: sep._candidate(m, views) for m in ("ink", "relief")}
     t_read = time.perf_counter() - t
     return sep.build_report(r, cands), t_read
 

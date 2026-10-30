@@ -29,6 +29,7 @@ RUN grep -v -E "^(pytest|httpx|-r )" /tmp/requirements-all.txt > /tmp/app-requir
 COPY --chown=app:app app ./app
 COPY --chown=app:app opencv ./opencv
 COPY --chown=app:app ocr ./ocr
+COPY --chown=app:app ocr_merge ./ocr_merge
 COPY --chown=app:app run.py ./run.py
 USER app
 

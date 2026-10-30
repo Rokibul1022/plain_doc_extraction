@@ -159,7 +159,7 @@ def read_plate(img: np.ndarray, force_mode: str | None = None) -> PlateReport:
     return build_report(r, {m: _candidate(m, views) for m in ("ink", "relief")}, force_mode)
 
 
-def build_report(r, cands: dict, force_mode: str | None = None) -> PlateReport:
+def build_report(r, cands: dict, force_mode: str | None = None, make_page: bool = True) -> PlateReport:
     """Pick the reading from the ink and relief candidates of one scanned plate (shared with ocr_merge)."""
     avail = {m: c for m, c in cands.items() if c is not None}
     if force_mode in avail:
@@ -194,7 +194,7 @@ def build_report(r, cands: dict, force_mode: str | None = None) -> PlateReport:
     verdict = _verdict(best.digits, best.conf, best.agreement)
     if verdict == "readable" and digits != best.digits:
         verdict = "uncertain"  # the two readers disagree about a digit
-    page = relief_page(r.restored) if best.mode == "relief" else make_document(_page_input(r.restored))
+    page = r.restored if not make_page else relief_page(r.restored) if best.mode == "relief" else make_document(_page_input(r.restored))
     return PlateReport(
         mode=best.mode, digits=digits, digit_conf=best.conf or [0.0] * 6,
         top=city, letter=letter if letter_conf >= LETTER_SHOW else "",

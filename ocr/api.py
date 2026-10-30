@@ -130,6 +130,20 @@ def _uri(img: np.ndarray, png: bool = True) -> str:
     return f"data:{mime};base64," + base64.b64encode(data).decode()
 
 
+def read_payload(img: np.ndarray, rep, t0: float, **extra) -> dict:
+    """JSON for one finished reading (shared by /api/plate/read and the merged-reader route /api/merge/read)."""
+    shown = img.copy()
+    cv2.polylines(shown, [rep.corners.astype(np.int32)], True, (0, 220, 0), max(2, img.shape[1] // 200), cv2.LINE_AA)
+    return {
+        "width": img.shape[1], "height": img.shape[0], "verdict": rep.verdict, "mode": rep.mode,
+        "text": rep.text, "top": rep.top, "letter": rep.letter, "digits": rep.digits,
+        "number": f"{rep.digits[:2]}-{rep.digits[2:]}", "corner_method": rep.corner_method,
+        "images": {"result": _uri(render_report(rep)), "page": _uri(rep.page), "straight": _uri(rep.rectified),
+                   "original": _uri(shown, png=False)},
+        "elapsed_s": round(time.perf_counter() - t0, 2), **extra,
+    }
+
+
 @router.post("/read")
 async def read(file: UploadFile = File(...), mode: str = Form("auto")):
     """The full reading pipeline (YOLO / crop -> OpenCV scan -> ink and relief readers -> checked result).
@@ -150,16 +164,7 @@ async def read(file: UploadFile = File(...), mode: str = Form("auto")):
     t0 = time.perf_counter()
     async with _READ_SLOTS:
         rep = await asyncio.to_thread(read_plate, img, None if mode == "auto" else mode)
-    shown = img.copy()
-    cv2.polylines(shown, [rep.corners.astype(np.int32)], True, (0, 220, 0), max(2, img.shape[1] // 200), cv2.LINE_AA)
-    return {
-        "width": img.shape[1], "height": img.shape[0], "verdict": rep.verdict, "mode": rep.mode,
-        "text": rep.text, "top": rep.top, "letter": rep.letter, "digits": rep.digits,
-        "number": f"{rep.digits[:2]}-{rep.digits[2:]}", "corner_method": rep.corner_method,
-        "images": {"result": _uri(render_report(rep)), "page": _uri(rep.page), "straight": _uri(rep.rectified),
-                   "original": _uri(shown, png=False)},
-        "elapsed_s": round(time.perf_counter() - t0, 2),
-    }
+    return read_payload(img, rep, t0)
 
 
 @router.post("/scan")
